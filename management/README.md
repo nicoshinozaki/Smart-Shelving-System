@@ -9,3 +9,7 @@ If you are on MacOS and you have homebrew, run `brew install qt6` to install the
 also add Qt Designer to your system. Run `designer` to start the designer application. The Qt Designer
 generates `.ui` files that can be converted to runnable python code with `pyuic6`, which also comes with Qt
 if you installed Qt using homebrew.
+
+## To run
+
+Please use the `run_frontend.sh` script in repository root.
