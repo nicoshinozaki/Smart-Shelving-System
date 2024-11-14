@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd frontend
+cd management
 python3 -m venv .venv
 
 # Activate the virtual environment
@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 
-python frontend_main.py
+python management_main.py
 
 # Deactivate the virtual environment
 deactivate
