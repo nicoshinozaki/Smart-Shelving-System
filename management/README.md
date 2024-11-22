@@ -12,4 +12,4 @@ if you installed Qt using homebrew.
 
 ## To run
 
-Please use the `run_frontend.sh` script in repository root.
+Please modify the CREDENTIALS_PATH environmental variable and use the `run_management.sh` script in repository root.
