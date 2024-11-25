@@ -24,7 +24,7 @@ pip install -r requirements.txt
 pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 
 # Setting environmental variable for API credential file
-export CREDENTIALS_PATH=path-to-credentials.json # Update so it matches the path of the json file in your set up
+export CREDENTIALS_PATH=smart-shelving-27ec95c7dcb2.json # Ensure json file is saved in management directory
 
 python management_main.py
 
