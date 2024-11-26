@@ -1,5 +1,18 @@
 #!/bin/bash
+
 set -x
+
+# Unlock secret files with git-crypt
+if [ -z "$1" ]; then
+    echo "Error: No key file provided for git-crypt!"
+    exit 1
+fi
+
+git-crypt unlock "$1"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to unlock secret files!"
+    exit 1
+fi
 
 cd management
 python3 -m venv .venv
