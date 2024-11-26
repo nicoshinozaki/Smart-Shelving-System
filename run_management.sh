@@ -2,12 +2,6 @@
 
 set -x
 
-# Unlock secret files with git-crypt
-if [ -z "$1" ]; then
-    echo "Error: No key file provided for git-crypt!"
-    exit 1
-fi
-
 cd management
 python3 -m venv .venv
 
@@ -31,7 +25,7 @@ pip install -r requirements.txt
 pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 
 # Setting environmental variable for API credential file
-export CREDENTIALS_PATH=secret/smart-shelving-27ec95c7dcb2.json
+export CREDENTIALS_PATH=../secret/smart-shelving-27ec95c7dcb2.json
 nohup python management_main.py > management_main.log 2>&1 &
 
 # Deactivate the virtual environment
