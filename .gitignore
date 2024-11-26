@@ -2,5 +2,5 @@
 **/.venv/
 ui_*
 
-# Google API credentials file
-smart-shelving-27ec95c7dcb2.json
+# Logs
+*.log
