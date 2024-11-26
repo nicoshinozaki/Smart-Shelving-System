@@ -8,12 +8,6 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-git-crypt unlock "$1"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to unlock secret files!"
-    exit 1
-fi
-
 cd management
 python3 -m venv .venv
 
