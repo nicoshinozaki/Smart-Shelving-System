@@ -1,6 +1,9 @@
-# python virtual environment
+# Python virtual environment
 **/.venv/
 ui_*
 
-# Google API credentials file
-smart-shelving-27ec95c7dcb2.json
+# Logs
+*.log
+
+# Key files, NEVER add these to git!
+*.key
