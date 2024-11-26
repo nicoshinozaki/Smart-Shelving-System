@@ -1,6 +1,9 @@
-# python virtual environment
+# Python virtual environment
 **/.venv/
 ui_*
 
 # Logs
 *.log
+
+# Key files, NEVER add these to git!
+*.key
