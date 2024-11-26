@@ -24,9 +24,8 @@ pip install -r requirements.txt
 pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 
 # Setting environmental variable for API credential file
-export CREDENTIALS_PATH=path-to-credentials.json # Update so it matches the path of the json file in your set up
-
-python management_main.py
+export CREDENTIALS_PATH=secret/smart-shelving-27ec95c7dcb2.json
+nohup python management_main.py > management_main.log 2>&1 &
 
 # Deactivate the virtual environment
 deactivate
