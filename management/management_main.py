@@ -1,7 +1,7 @@
 from ui_Smart_Shelving_System import Ui_MainWindow
 import sys, os
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton
-from PyQt6 import uic
+from PyQt6 import uic, QtGui
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
@@ -37,24 +37,41 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.setColumnCount(len(data[0]))
 
         # Populate the table
+
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.table_widget.setFont(font)
         for row_index, row_data in enumerate(data):
             for col_index, cell_data in enumerate(row_data):
-                self.table_widget.setItem(row_index, col_index, QTableWidgetItem(cell_data))
+                if row_index == 0:
+                    self.table_widget.setHorizontalHeaderItem(col_index, QTableWidgetItem(cell_data))
+                    self.table_widget.horizontalHeaderItem(col_index).setBackground(QtGui.QColor(60, 60, 60))
+                elif col_index == 0:
+                    self.table_widget.setVerticalHeaderItem(row_index - 1, QTableWidgetItem(cell_data))
+                    self.table_widget.verticalHeaderItem(row_index - 1).setBackground(
+                        QtGui.QColor(50 + 10 * (row_index % 2), 50 + 10 * (row_index % 2), 50 + 10 * (row_index % 2)))
+                else:
+                    self.table_widget.setItem(row_index - 1, col_index - 1, QTableWidgetItem(cell_data))
+                    self.table_widget.item(row_index - 1, col_index - 1).setBackground(
+                        QtGui.QColor(50 + 10 * (row_index % 2), 50 + 10 * (row_index % 2), 50 + 10 * (row_index % 2)))
 
         self.table_widget.cellChanged.connect(self.record_change)
         self.save_button.clicked.connect(self.push_changes_to_sheet)
 
     def record_change(self, row, column):
         updated_value = self.table_widget.item(row, column).text()
-
-        self.changes.append((row, column, updated_value))
+        bg = self.table_widget.item(row, column).background()
+        self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 0, 0))
+        self.changes.append((row, column, updated_value, bg))
 
     def push_changes_to_sheet(self):
         if not self.changes:
             return
         
         requests = []
-        for row, column, value in self.changes:
+        self.table_widget.cellChanged.disconnect()
+        for row, column, value, bg in self.changes:
+            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
             column_letter = chr(65 + column) # map column index to letter
             cell_range = f'{self.sheet_name}!{column_letter}{row+1}' # Convert to A1 notation
 
@@ -62,6 +79,8 @@ class GoogleSheetTableApp(QMainWindow):
                 "range": cell_range,
                 "values": [[value]]
             })
+        self.table_widget.cellChanged.connect(self.record_change)
+        
 
         creds = Credentials.from_service_account_file(os.getenv("CREDENTIALS_PATH"))
         service = build('sheets', 'v4', credentials=creds)
