@@ -27,7 +27,7 @@ pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 # Setting environmental variable for API credential file
 export CREDENTIALS_PATH=../secret/smart-shelving-27ec95c7dcb2.json
 echo "Starting management_main.py..."
-nohup python management_main.py > management_main.log 2>&1 &
+python management_main.py &
 
 # Deactivate the virtual environment
 deactivate

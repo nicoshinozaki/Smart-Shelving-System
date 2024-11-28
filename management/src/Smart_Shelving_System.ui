@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>794</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,16 +15,30 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QTableWidget" name="tableWidget"/>
-    </item>
-    <item row="0" column="1">
-     <widget class="QTableWidget" name="tableWidget_2"/>
-    </item>
     <item row="1" column="0">
      <widget class="QPushButton" name="saveButton">
       <property name="text">
        <string>Save Changes</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QTableWidget" name="tableWidget_2"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="reloadButton">
+      <property name="text">
+       <string>Reload From Google</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
      </widget>
     </item>
@@ -35,8 +49,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>794</width>
-     <height>20</height>
+     <width>1024</width>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSmart_Shelving_System">
@@ -74,8 +88,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpAbout">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::HelpAbout"/>
    </property>
    <property name="text">
     <string>About</string>
@@ -83,8 +96,7 @@
   </action>
   <action name="actionHelp">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpFaq">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::HelpFaq"/>
    </property>
    <property name="text">
     <string>Help</string>
@@ -92,8 +104,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::SystemLogOut">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::SystemLogOut"/>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -101,8 +112,7 @@
   </action>
   <action name="actionNew">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentNew">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentNew"/>
    </property>
    <property name="text">
     <string>New</string>
@@ -113,8 +123,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentOpen">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
     <string>Open</string>
@@ -125,8 +134,7 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentSave">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentSave"/>
    </property>
    <property name="text">
     <string>Save</string>
@@ -137,8 +145,7 @@
   </action>
   <action name="actionUndo">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditUndo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditUndo"/>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -152,8 +159,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditRedo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditRedo"/>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -164,8 +170,7 @@
   </action>
   <action name="actionCut">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditCut">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditCut"/>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -176,8 +181,7 @@
   </action>
   <action name="actionCopy">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditCopy">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -188,8 +192,7 @@
   </action>
   <action name="actionPaste">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditPaste">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditPaste"/>
    </property>
    <property name="text">
     <string>Paste</string>
