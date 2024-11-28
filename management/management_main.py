@@ -1,6 +1,6 @@
 from ui_Smart_Shelving_System import Ui_MainWindow
 import sys, os, logging, traceback, time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar
 from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -60,6 +60,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
         self.save_button = self.findChild(QPushButton, 'saveButton')
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
+        self.statusbar = self.findChild(QStatusBar, 'statusbar')
 
         # Load table
         try:
@@ -86,6 +87,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.actionUndo.triggered.connect(self.undo)
         self.actionRedo.triggered.connect(self.redo)
 
+        self.statusbar.showMessage("Ready")
         logger.info("Initialized Google Sheet Table App")
 
     @staticmethod
@@ -116,7 +118,6 @@ class GoogleSheetTableApp(QMainWindow):
     def peripheral_handler(self, *args, **kwargs):
         QMessageBox.information(self, "Peripheral Message", args[0])
 
-
     def load_table(self, data):
         self.table_widget.setRowCount(len(data)-1)
         self.table_widget.setColumnCount(len(data[0])-1)
@@ -127,13 +128,15 @@ class GoogleSheetTableApp(QMainWindow):
 
         # Populate the table and save table states
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setPointSize(14)
         self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         for row in range(len(data)-1):
             for col in range(len(data[0])-1):
                 self.table_widget.setItem(row, col, QTableWidgetItem())
+                self.table_widget.item(row, col).setTextAlignment(
+                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 shade = 50 + 10 * (row % 2)
                 self.table_widget.item(row, col).setBackground(
                         QtGui.QColor(shade, shade, shade))
@@ -173,6 +176,7 @@ class GoogleSheetTableApp(QMainWindow):
     def undo(self):
         if not self.undo_stack:
             return
+        self.statusbar.showMessage("Undo")
         change = self.undo_stack.pop()
         row, column, value = change
         self.redo_stack.append((row, column, self.table_current_state[row, column]))
@@ -189,6 +193,7 @@ class GoogleSheetTableApp(QMainWindow):
     def redo(self):
         if not self.redo_stack:
             return
+        self.statusbar.showMessage("Redo")
         change = self.redo_stack.pop()
         row, column, value = change
         self.undo_stack.append((row, column, self.table_current_state[row, column]))
@@ -203,6 +208,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.connect(self.record_change)
 
     def save(self):
+        self.statusbar.showMessage("Saving changes")
         self.save_button.setEnabled(False)
         self.reload_button.setEnabled(False)
         self.table_widget.setEnabled(False)
@@ -210,11 +216,13 @@ class GoogleSheetTableApp(QMainWindow):
         worker.signals.finished.connect(lambda: self.table_widget.setEnabled(True))
         worker.signals.finished.connect(lambda: self.save_button.setEnabled(True))
         worker.signals.finished.connect(lambda: self.reload_button.setEnabled(True))
+        worker.signals.finished.connect(lambda: self.statusbar.showMessage("Changes saved to google"))
         worker.signals.error.connect(lambda: self.table_widget.setEnabled(True))
         worker.signals.error.connect(lambda: self.save_button.setEnabled(True))
         worker.signals.error.connect(lambda: self.reload_button.setEnabled(True))
         worker.signals.error.connect(lambda e: logger.error(e))
         worker.signals.error.connect(lambda: QMessageBox.critical(self, "Error", "Failed to save changes."))
+        worker.signals.error.connect(lambda: self.statusbar.showMessage("Failed to save changes"))
         self.threadpool.start(worker)
 
     def reload_table(self):
@@ -225,6 +233,7 @@ class GoogleSheetTableApp(QMainWindow):
                                         QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
         if response == QMessageBox.StandardButton.Ok:
             worker = WorkerThread(self.fetch_sheets, self.spreadsheet_id, self.sheet_name)
+            self.statusbar.showMessage("Reloading table")
             self.table_widget.setEnabled(False)
             self.reload_button.setEnabled(False)
             self.save_button.setEnabled(False)
@@ -235,12 +244,14 @@ class GoogleSheetTableApp(QMainWindow):
             worker.signals.finished.connect(lambda: self.save_button.setEnabled(True))
             worker.signals.finished.connect(lambda: self.reload_button.setEnabled(True))
             worker.signals.finished.connect(lambda: self.table_widget.cellChanged.connect(self.record_change))
+            worker.signals.finished.connect(lambda: self.statusbar.showMessage("Table reloaded"))
             worker.signals.error.connect(lambda: self.table_widget.setEnabled(True))
             worker.signals.error.connect(lambda: self.reload_button.setEnabled(True))
             worker.signals.error.connect(lambda: self.save_button.setEnabled(True))
             worker.signals.error.connect(lambda: self.table_widget.cellChanged.connect(self.record_change))
             worker.signals.error.connect(lambda e: logger.warning(e))
             worker.signals.error.connect(lambda: QMessageBox.warning(self, "Warning", "Failed to reload table."))
+            worker.signals.error.connect(lambda: self.statusbar.showMessage("Failed to reload table"))
             
             self.undo_stack.clear()
             self.redo_stack.clear()
