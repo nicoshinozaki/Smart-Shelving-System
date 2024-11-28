@@ -37,9 +37,9 @@ class PeripheralManager(WorkerThread):
     def peripheral_manager(self):
         i = 0
         while not self.stop:
-            time.sleep(0.5)
+            if i % 20 == 0: self.signals.result.emit("Peripheral Manager is running...")
+            time.sleep(1)
             i += 1
-            if i % 10 == 0: self.signals.result.emit("Peripheral Manager is running...")
 
 class GoogleSheetTableApp(QMainWindow):
     def __init__(self, spreadsheet_id, sheet_name):
