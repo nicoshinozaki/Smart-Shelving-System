@@ -42,6 +42,43 @@ class PeripheralManager(WorkerThread):
             i += 1
 
 class GoogleSheetTableApp(QMainWindow):
+    """
+    A PyQt5 application for managing and editing Google Sheets data in a table format.
+    Attributes:
+        spreadsheet_id (str): The ID of the Google Sheets spreadsheet.
+        sheet_name (str): The name of the sheet within the spreadsheet.
+        threadpool (QThreadPool): A thread pool for managing background tasks.
+        undo_stack (list): A stack to track undo changes.
+        redo_stack (list): A stack to track redo changes.
+        table_widget (QTableWidget): The table widget displaying the Google Sheets data.
+        save_button (QPushButton): The button to save changes to Google Sheets.
+        reload_button (QPushButton): The button to reload the table data from Google Sheets.
+        statusbar (QStatusBar): The status bar to display messages.
+        peripheral_thread (PeripheralManager): A thread to manage peripheral tasks.
+        table_initial_state (np.ndarray): The initial state of the table data.
+        table_current_state (np.ndarray): The current state of the table data.
+    Methods:
+        fetch_sheets(spreadsheet_id, sheet_name):
+            Fetches data from the specified Google Sheets spreadsheet and sheet.
+        closeEvent(event):
+            Handles the close event of the application, prompting the user for confirmation.
+        peripheral_handler(*args, **kwargs):
+            Handles result signals from the peripheral manager.
+        load_table(data):
+            Loads data into the table widget and initializes table states.
+        record_change(row, column):
+            Records changes made to the table cells and updates undo/redo stacks.
+        undo():
+            Undoes the last change made to the table.
+        redo():
+            Redoes the last undone change to the table.
+        save():
+            Saves changes made to the table to Google Sheets.
+        reload_table():
+            Reloads the table data from Google Sheets, discarding unsaved changes.
+        push_sheets():
+            Pushes changes made to the table to Google Sheets.
+    """
     def __init__(self, spreadsheet_id, sheet_name):
         super().__init__()
         uic.loadUi('src/Smart_Shelving_System.ui', self)
