@@ -7,6 +7,8 @@ from googleapiclient.discovery import build
 import numpy as np
 import logging
 
+logger = logging.getLogger(__name__)
+
 class GoogleSheetTableApp(QMainWindow):
     def __init__(self, spreadsheet_id, sheet_name):
         super().__init__()
@@ -27,8 +29,8 @@ class GoogleSheetTableApp(QMainWindow):
         try:
             data = self.fetch_sheets(spreadsheet_id, sheet_name)
         except Exception as e:
-            logging.error("Failed to fetch initial Google Sheets data")
-            logging.error(e)
+            logger.error("Failed to fetch initial Google Sheets data")
+            logger.error(e)
             # TODO: Display an error message
             # This should not be recoverable
             sys.exit(-1)
@@ -42,7 +44,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.actionUndo.triggered.connect(self.undo)
         self.actionRedo.triggered.connect(self.redo)
 
-        logging.info("Initialized Google Sheet Table App")
+        logger.info("Initialized Google Sheet Table App")
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
@@ -144,7 +146,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.connect(self.record_change)
 
     def reload_table(self):
-        logging.info("Reloading table")
+        logger.info("Reloading table")
         response = QMessageBox.critical(self,
                                         "Reload Table?",
                                         "Are you sure you want to reload the table? This cannot be undone.",
@@ -153,8 +155,8 @@ class GoogleSheetTableApp(QMainWindow):
             try:
                 data = self.fetch_sheets(spreadsheet_id, sheet_name)
             except Exception as e:
-                logging.warning("Failed to reload table")
-                logging.warning(e)
+                logger.warning("Failed to reload table")
+                logger.warning(e)
                 # TODO: Display an error message
                 # This should be recoverable
                 return
@@ -163,7 +165,7 @@ class GoogleSheetTableApp(QMainWindow):
             self.redo_stack.clear()
             self.load_table(data)
             self.table_widget.cellChanged.connect(self.record_change)
-            logging.info("Reloaded table")
+            logger.info("Reloaded table")
         else:
             return
 
@@ -202,11 +204,10 @@ class GoogleSheetTableApp(QMainWindow):
             self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
         self.table_initial_state = self.table_current_state.copy()
 
-        logging.info("Pushed changes to Google Sheets")
-        logging.info(deltas)
-        logging.info(self.table_current_state)
+        logger.info("Pushed changes to Google Sheets")
+        logger.info(deltas)
+        logger.info(self.table_current_state)
 
-# Initialize the app with the fetched data
 if __name__ == '__main__':
     logging.basicConfig(filename='management.log',
                     filemode='w',
