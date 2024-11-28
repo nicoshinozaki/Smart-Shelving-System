@@ -99,6 +99,13 @@ class GoogleSheetTableApp(QMainWindow):
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
         self.statusbar = self.findChild(QStatusBar, 'statusbar')
 
+        self.colors = {
+            'base': self.table_widget.palette().base(),
+            'alternateBase': self.table_widget.palette().alternateBase(),
+            'brightText': self.table_widget.palette().brightText(),
+            'text': self.table_widget.palette().text()
+        }
+
         # Load table
         try:
             data = self.fetch_sheets(spreadsheet_id, sheet_name)
@@ -170,25 +177,29 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         for row in range(len(data)-1):
+            if row % 2:
+                brush = self.colors['base']
+            else:
+                brush = self.colors['alternateBase']
             for col in range(len(data[0])-1):
                 self.table_widget.setItem(row, col, QTableWidgetItem())
                 self.table_widget.item(row, col).setTextAlignment(
                     QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-                shade = 50 + 10 * (row % 2)
-                self.table_widget.item(row, col).setBackground(
-                        QtGui.QColor(shade, shade, shade))
+                self.table_widget.item(row, col).setBackground(brush)
+                
         for row_index, row_data in enumerate(data):
-            shade = 50 + 10 * ((row_index-1) % 2)
+            if (row_index-1) % 2:
+                brush = self.colors['base']
+            else:
+                brush = self.colors['alternateBase']
             for col_index, cell_data in enumerate(row_data):
                 if row_index == 0:
                     if col_index == 0:
                         continue
                     self.table_widget.setHorizontalHeaderItem(col_index - 1, QTableWidgetItem(cell_data))
-                    self.table_widget.horizontalHeaderItem(col_index - 1).setBackground(QtGui.QColor(60, 60, 60))
                 elif col_index == 0:
                     self.table_widget.setVerticalHeaderItem(row_index - 1, QTableWidgetItem(cell_data))
-                    self.table_widget.verticalHeaderItem(row_index - 1).setBackground(
-                        QtGui.QColor(shade, shade, shade))
+                    self.table_widget.verticalHeaderItem(row_index - 1).setBackground(brush)
                 else:
                     self.table_widget.item(row_index - 1, col_index - 1).setText(cell_data)
                     self.table_initial_state[row_index - 1][col_index - 1] = cell_data
@@ -203,9 +214,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.redo_stack.clear()
         if self.table_initial_state[row, column] != new_value:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 0, 0))
+            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
         else:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
+            self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.undo_stack.append((row, column, previous_value))
         self.table_current_state[row, column] = new_value
         self.table_widget.cellChanged.connect(self.record_change)
@@ -222,9 +233,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.table_widget.item(row, column).setText(value)
         if self.table_initial_state[row][column] != value:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 0, 0))
+            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
         else:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
+            self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.table_widget.cellChanged.connect(self.record_change)
 
     def redo(self):
@@ -239,9 +250,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.table_widget.item(row, column).setText(value)
         if self.table_initial_state[row][column] != value:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 0, 0))
+            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
         else:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
+            self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.table_widget.cellChanged.connect(self.record_change)
 
     def save(self):
@@ -328,7 +339,7 @@ class GoogleSheetTableApp(QMainWindow):
             return
 
         for row, column, _ in deltas:
-            self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
+            self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.table_initial_state = self.table_current_state.copy()
 
         logger.info("Pushed changes to Google Sheets")
