@@ -1,13 +1,45 @@
 from ui_Smart_Shelving_System import Ui_MainWindow
-import sys, os
+import sys, os, logging, traceback, time
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox
-from PyQt6 import uic, QtGui
+from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import numpy as np
-import logging
 
 logger = logging.getLogger(__name__)
+
+class WorkerSignals(QtCore.QObject):
+    finished = QtCore.pyqtSignal()
+    error = QtCore.pyqtSignal(tuple)
+    result = QtCore.pyqtSignal(object)
+
+class WorkerThread(QtCore.QRunnable):
+    def __init__(self, fn, *args, **kwargs):
+        super().__init__()
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        try:
+            self.signals.result.emit(self.fn(*self.args, **self.kwargs))
+        except Exception as e:
+            self.signals.error.emit((e, traceback.format_exc()))
+        self.signals.finished.emit()
+
+class PeripheralManager(WorkerThread):
+    def __init__(self):
+        self.stop = False
+        super().__init__(self.peripheral_manager)
+
+    def peripheral_manager(self):
+        i = 0
+        while not self.stop:
+            time.sleep(0.5)
+            i += 1
+            if i % 10 == 0: self.signals.result.emit("Peripheral Manager is running...")
 
 class GoogleSheetTableApp(QMainWindow):
     def __init__(self, spreadsheet_id, sheet_name):
@@ -15,6 +47,10 @@ class GoogleSheetTableApp(QMainWindow):
         uic.loadUi('src/Smart_Shelving_System.ui', self)
         self.spreadsheet_id = spreadsheet_id
         self.sheet_name = sheet_name
+
+        # Initialize a thread pool for background tasks
+        self.threadpool = QtCore.QThreadPool()
+        logger.info(f"Multithreading with maximum {self.threadpool.maxThreadCount()} threads")
 
         # Initialize stacks to track edit changes
         self.undo_stack = []
@@ -36,11 +72,17 @@ class GoogleSheetTableApp(QMainWindow):
             sys.exit(-1)
         self.load_table(data)
 
+        # Peripheral manager
+        self.peripheral_thread = PeripheralManager()
+        self.peripheral_thread.signals.result.connect(self.peripheral_handler)
+        self.threadpool.start(self.peripheral_thread)
+        
+
         # Connect signals to slots
         self.table_widget.cellChanged.connect(self.record_change)
-        self.save_button.clicked.connect(self.push_sheets)
+        self.save_button.clicked.connect(self.save)
         self.reload_button.clicked.connect(self.reload_table)
-        self.actionSave.triggered.connect(self.push_sheets)
+        self.actionSave.triggered.connect(self.save)
         self.actionUndo.triggered.connect(self.undo)
         self.actionRedo.triggered.connect(self.redo)
 
@@ -59,7 +101,22 @@ class GoogleSheetTableApp(QMainWindow):
         values = result.get('values', [])
         
         return values
-    
+
+    def closeEvent(self, event):
+        response = QMessageBox.critical(self,
+                                        "Close Application?",
+                                        "Are you sure you want to close the application? Any unsaved changes will be lost.",
+                                        QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        if response == QMessageBox.StandardButton.Ok:
+            self.peripheral_thread.stop = True
+            event.accept()
+        else:
+            event.ignore()
+
+    def peripheral_handler(self, *args, **kwargs):
+        QMessageBox.information(self, "Peripheral Message", args[0])
+
+
     def load_table(self, data):
         self.table_widget.setRowCount(len(data)-1)
         self.table_widget.setColumnCount(len(data[0])-1)
@@ -145,6 +202,21 @@ class GoogleSheetTableApp(QMainWindow):
             self.table_widget.item(row, column).setForeground(QtGui.QColor(255, 255, 255))
         self.table_widget.cellChanged.connect(self.record_change)
 
+    def save(self):
+        self.save_button.setEnabled(False)
+        self.reload_button.setEnabled(False)
+        self.table_widget.setEnabled(False)
+        worker = WorkerThread(self.push_sheets)
+        worker.signals.finished.connect(lambda: self.table_widget.setEnabled(True))
+        worker.signals.finished.connect(lambda: self.save_button.setEnabled(True))
+        worker.signals.finished.connect(lambda: self.reload_button.setEnabled(True))
+        worker.signals.error.connect(lambda: self.table_widget.setEnabled(True))
+        worker.signals.error.connect(lambda: self.save_button.setEnabled(True))
+        worker.signals.error.connect(lambda: self.reload_button.setEnabled(True))
+        worker.signals.error.connect(lambda e: logger.error(e))
+        worker.signals.error.connect(lambda: QMessageBox.critical(self, "Error", "Failed to save changes."))
+        self.threadpool.start(worker)
+
     def reload_table(self):
         logger.info("Reloading table")
         response = QMessageBox.critical(self,
@@ -152,20 +224,27 @@ class GoogleSheetTableApp(QMainWindow):
                                         "Are you sure you want to reload the table? This cannot be undone.",
                                         QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
         if response == QMessageBox.StandardButton.Ok:
-            try:
-                data = self.fetch_sheets(spreadsheet_id, sheet_name)
-            except Exception as e:
-                logger.warning("Failed to reload table")
-                logger.warning(e)
-                # TODO: Display an error message
-                # This should be recoverable
-                return
+            worker = WorkerThread(self.fetch_sheets, self.spreadsheet_id, self.sheet_name)
+            self.table_widget.setEnabled(False)
+            self.reload_button.setEnabled(False)
+            self.save_button.setEnabled(False)
             self.table_widget.cellChanged.disconnect()
+            
+            worker.signals.result.connect(self.load_table)
+            worker.signals.finished.connect(lambda: self.table_widget.setEnabled(True))
+            worker.signals.finished.connect(lambda: self.save_button.setEnabled(True))
+            worker.signals.finished.connect(lambda: self.reload_button.setEnabled(True))
+            worker.signals.finished.connect(lambda: self.table_widget.cellChanged.connect(self.record_change))
+            worker.signals.error.connect(lambda: self.table_widget.setEnabled(True))
+            worker.signals.error.connect(lambda: self.reload_button.setEnabled(True))
+            worker.signals.error.connect(lambda: self.save_button.setEnabled(True))
+            worker.signals.error.connect(lambda: self.table_widget.cellChanged.connect(self.record_change))
+            worker.signals.error.connect(lambda e: logger.warning(e))
+            worker.signals.error.connect(lambda: QMessageBox.warning(self, "Warning", "Failed to reload table."))
+            
             self.undo_stack.clear()
             self.redo_stack.clear()
-            self.load_table(data)
-            self.table_widget.cellChanged.connect(self.record_change)
-            logger.info("Reloaded table")
+            self.threadpool.start(worker)
         else:
             return
 
