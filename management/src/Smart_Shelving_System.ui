@@ -6,17 +6,182 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>987</width>
+    <height>722</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QTableWidget" name="tableWidget"/>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Inventory</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="BrightText">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>101</green>
+                <blue>113</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>48</red>
+                <green>48</green>
+                <blue>48</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="BrightText">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>101</green>
+                <blue>113</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>48</red>
+                <green>48</green>
+                <blue>48</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="BrightText">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>101</green>
+                <blue>113</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>48</red>
+                <green>48</green>
+                <blue>48</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="saveButton">
+          <property name="text">
+           <string>Save</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="reloadButton">
+          <property name="text">
+           <string>Reload From Google</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QTableWidget" name="tableWidget_2"/>
@@ -28,8 +193,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>22</height>
+     <width>987</width>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSmart_Shelving_System">
@@ -67,8 +232,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpAbout">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::HelpAbout"/>
    </property>
    <property name="text">
     <string>About</string>
@@ -76,8 +240,7 @@
   </action>
   <action name="actionHelp">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpFaq">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::HelpFaq"/>
    </property>
    <property name="text">
     <string>Help</string>
@@ -85,8 +248,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::SystemLogOut">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::SystemLogOut"/>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -94,8 +256,7 @@
   </action>
   <action name="actionNew">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentNew">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentNew"/>
    </property>
    <property name="text">
     <string>New</string>
@@ -106,8 +267,7 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentOpen">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
     <string>Open</string>
@@ -118,8 +278,7 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::DocumentSave">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::DocumentSave"/>
    </property>
    <property name="text">
     <string>Save</string>
@@ -130,8 +289,7 @@
   </action>
   <action name="actionUndo">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditUndo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditUndo"/>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -145,8 +303,7 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditRedo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditRedo"/>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -157,8 +314,7 @@
   </action>
   <action name="actionCut">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditCut">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditCut"/>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -169,8 +325,7 @@
   </action>
   <action name="actionCopy">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditCopy">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditCopy"/>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -181,8 +336,7 @@
   </action>
   <action name="actionPaste">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditPaste">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="QIcon::ThemeIcon::EditPaste"/>
    </property>
    <property name="text">
     <string>Paste</string>

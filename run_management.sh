@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 cd management
 python3 -m venv .venv
 
@@ -20,13 +18,16 @@ if [ ! -f requirements.txt ]; then
     exit 1
 fi
 
-pip install -r requirements.txt
+echo "Installing required packages..."
+pip install -r requirements.txt > /dev/null
 
+echo "Translating UI python file..."
 pyuic6 src/Smart_Shelving_System.ui -o ui_Smart_Shelving_System.py
 
 # Setting environmental variable for API credential file
 export CREDENTIALS_PATH=../secret/smart-shelving-27ec95c7dcb2.json
-nohup python management_main.py > management_main.log 2>&1 &
+echo "Starting management_main.py..."
+python management_main.py &
 
 # Deactivate the virtual environment
 deactivate
