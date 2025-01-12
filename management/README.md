@@ -10,6 +10,7 @@ also add Qt Designer to your system. Run `designer` to start the designer applic
 generates `.ui` files that can be converted to runnable python code with `pyuic6`, which also comes with Qt
 if you installed Qt using homebrew.
 
-## To run
+Once running QtDesigner, to open the application window, select the Smart_Shelving_System.ui file from the src file to open in the prompt window. Any changes in QtDesigner will automatically be saved to the file itself.
 
-Please modify the CREDENTIALS_PATH environmental variable and use the `run_management.sh` script in repository root.
+## Display Functions
+The behavior of the display window (API calls, other functions) can be edited in the management_main.py file.
