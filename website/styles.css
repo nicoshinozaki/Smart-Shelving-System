@@ -1,0 +1,171 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif; /* or your chosen font */
+  background: linear-gradient(135deg, #1f2a48 0%, #3c1853 100%);
+  color: #ffffff;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.header .logo img {
+  height: 40px;
+  /* Adjust as needed */
+}
+
+.header nav a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* "Get Started" link style (top-right) */
+.get-started {
+  background: #00c6c8; /* approximate teal from the button in Figma */
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.get-started:hover {
+  background: #00b1b3;
+}
+
+/* Hero Section */
+.hero-section {
+  display: flex;
+  flex-wrap: wrap; /* allows responsiveness */
+  align-items: center;
+  padding: 2rem;
+  min-height: 80vh;
+}
+
+/* Text + Buttons on the left */
+.hero-content {
+  flex: 1 1 400px;
+  max-width: 600px;
+  margin-right: 1rem;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 1.125rem;
+  margin: 0 0 2rem;
+  color: #ddd;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Primary (filled) button */
+.primary-btn {
+  background: #c13a7c; /* approximate magenta from Figma */
+  color: #ffffff;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+}
+
+/* Secondary (outline) button */
+.secondary-btn {
+  border: 2px solid #c13a7c;
+  color: #c13a7c;
+  background: transparent;
+}
+
+.secondary-btn:hover {
+  background: #c13a7c;
+  color: #fff;
+}
+
+/* Illustration on the right */
+.hero-illustration {
+  flex: 1 1 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-illustration img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly darker footer */
+}
+
+.footer-col {
+  flex: 1 1 150px;
+  margin: 0 1rem;
+}
+
+.footer-col h3 {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col ul li + li {
+  margin-top: 0.5rem;
+}
+
+.footer-col ul li a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+  color: #fff;
+}
+
+/* Responsive (basic example) */
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-content,
+  .hero-illustration {
+    margin: 1rem 0;
+  }
+}
