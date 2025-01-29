@@ -1,0 +1,355 @@
+.tablet {
+  align-items: center;
+  background-color: #0e0c31;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  min-height: 100vh;
+  position: relative;
+}
+
+.tablet .frame-30 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  padding: 30px 100px;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .navbar-3 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .frame-31 {
+  height: 36px;
+  margin-left: -4px;
+  position: relative;
+  width: 156px;
+}
+
+.tablet .frame-32 {
+  background-color: #5dd0d0;
+  border-radius: 8px;
+  height: 47px;
+  overflow: hidden;
+  position: relative;
+  width: 133px;
+}
+
+.tablet .text-wrapper-19 {
+  color: #ffffff;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  left: 36px;
+  letter-spacing: 0;
+  line-height: 27.5px;
+  position: absolute;
+  top: 9px;
+  white-space: nowrap;
+  width: 75px;
+}
+
+.tablet .hero-5 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 458px;
+  justify-content: space-around;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .frame-33 {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .frame-34 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 10px;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .welcome-to-the-2 {
+  color: #ffffff;
+  flex: 1;
+  font-family: var(--h1-font-family);
+  font-size: var(--h1-font-size);
+  font-style: var(--h1-font-style);
+  font-weight: var(--h1-font-weight);
+  height: 289px;
+  letter-spacing: var(--h1-letter-spacing);
+  line-height: var(--h1-line-height);
+  margin-top: -1px;
+  position: relative;
+  text-align: center;
+}
+
+.tablet .frame-35 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 10px;
+  justify-content: center;
+  max-height: 106px;
+  padding: 10px 0px;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .text-wrapper-20 {
+  color: #ffffff;
+  flex: 1;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 27.5px;
+  position: relative;
+  text-align: center;
+}
+
+.tablet .frame-36 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .log-in-wrapper {
+  align-items: center;
+  background-color: #8f2168;
+  border-radius: 68px;
+  display: inline-flex;
+  gap: 10px;
+  height: 63px;
+  justify-content: center;
+  padding: 18px 85px;
+  position: relative;
+}
+
+.tablet .log-in {
+  color: #ffffff;
+  font-family: "Outfit-SemiBold", Helvetica;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 27.5px;
+  margin-top: -1.5px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.tablet .footer-5 {
+  align-items: center;
+  align-self: stretch;
+  background-color: transparent;
+  display: flex;
+  height: 159px;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .frame-37 {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-grow: 1;
+  gap: 10px;
+  padding: 10px;
+  position: relative;
+}
+
+.tablet .text-wrapper-21 {
+  color: #ffffff;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  height: 129px;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: -1px;
+  position: relative;
+  width: 83px;
+}
+
+.tablet .frame-38 {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  position: relative;
+}
+
+.tablet .frame-39 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 10px 3px;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .text-wrapper-22 {
+  color: #ffffff;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: -1px;
+  position: relative;
+  width: fit-content;
+}
+
+.tablet .frame-40 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px 3px;
+  position: relative;
+  width: 100%;
+}
+
+.tablet .home-log-in-sign-up-5 {
+  align-self: stretch;
+  color: #ffffff;
+  flex: 1;
+  font-family: "Outfit", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 31px;
+  margin-top: -1px;
+  position: relative;
+}
+
+.tablet .frame-41 {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  position: relative;
+}
+
+.tablet .text-wrapper-23 {
+  color: #ffffff;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: -1px;
+  position: relative;
+  width: 80px;
+}
+
+.tablet .email-website-5 {
+  color: #ffffff;
+  flex: 1;
+  font-family: "Outfit", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 31px;
+  margin-top: -1px;
+  position: relative;
+}
+
+.tablet .text-wrapper-24 {
+  color: #ffffff;
+  flex: 1;
+  font-family: "Outfit", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-top: -1px;
+  position: relative;
+}
+
+.tablet .support-FAQ-5 {
+  color: #ffffff;
+  font-family: "Outfit", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 31px;
+  margin-top: -1px;
+  position: relative;
+  width: fit-content;
+}
+
+.tablet .ellipse-9 {
+  background-color: #87d0d080;
+  border-radius: 294px/297px;
+  filter: blur(305px);
+  height: 594px;
+  left: -218px;
+  position: absolute;
+  top: 269px;
+  width: 588px;
+}
+
+.tablet .ellipse-10 {
+  height: 593px;
+  left: 209px;
+  position: absolute;
+  top: 431px;
+  width: 572px;
+}
+
+.tablet .rectangle-5 {
+  align-self: stretch;
+  height: 8px;
+  position: relative;
+  width: 100%;
+}
