@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const pool = require('./db'); // from db.js
 const app = express();
 
 // Middleware
@@ -34,14 +36,71 @@ const DUMMY_USER = {
   password: 'password123'
 };
 
-app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  console.log(`User logged in: ${email} \n ${password}`);
-  // In real production code, you’d check a database, hash passwords, etc.
-  if (email === DUMMY_USER.email && password === DUMMY_USER.password) {
-    // For a real app, issue a secure token (like a JWT)
-    return res.status(200).json({ message: 'Login successful', token: 'abc123token' });
-  } else {
-    return res.status(401).json({ error: 'Invalid email or password' });
+app.post('/api/register', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // 2. Insert into the database
+    const result = await pool.query(
+      `INSERT INTO users (email, password_hash)
+       VALUES ($1, $2)
+       RETURNING id, email, created_at`,
+      [email, hashedPassword]
+    );
+
+    // 3. Respond with user info (excluding password)
+    const newUser = result.rows[0];
+    res.status(201).json({
+      message: 'User created successfully',
+      user: newUser,
+    });
+  } catch (error) {
+    console.error('Error in /api/register:', error);
+    if (error.code === '23505') {
+      // 23505 = unique_violation in PostgreSQL (duplicate email)
+      return res.status(400).json({ error: 'Email already in use' });
+    }
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.listen(5000, () => {
+  console.log('Server running on port 5000');
+});
+
+// server/index.js (add this route)
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Find user by email
+    const result = await pool.query(
+      'SELECT id, email, password_hash FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const user = result.rows[0];
+
+    // 2. Compare the incoming password with stored hash
+    const match = await bcrypt.compare(password, user.password_hash);
+
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // 3. Password is correct! (Issue a session or JWT token here)
+    // For now, just respond with success
+    res.json({ message: 'Login successful', userId: user.id });
+  } catch (error) {
+    console.error('Error in /api/login:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
