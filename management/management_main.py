@@ -35,13 +35,19 @@ class ConsoleCommandHandler(WorkerThread):
     def __init__(self, application, cmd = ""):
         self.stop = False
         parts = cmd.split()
-        command = parts[0]
-        if hasattr(self, f"{command}_handler") and callable(getattr(self, f"{command}_handler")):
-            handler = getattr(self, f"{command}_handler")
+        self.command = parts[0]
+        if hasattr(self, f"{self.command}_handler") and callable(getattr(self, f"{self.command}_handler")):
+            handler = getattr(self, f"{self.command}_handler")
             super().__init__(handler, *parts[1:], application = application)
         else:
             handler = self.error_cmd
             super().__init__(handler, parts[0], application = application)
+
+    def __str__(self):
+        return super().__str__() + f"({self.command})"
+    
+    def __repr__(self):
+        return super().__repr__() + f"({self.command})"
 
     def _resolve_variable(self, var_name):
         if var_name in globals():
@@ -56,6 +62,10 @@ class ConsoleCommandHandler(WorkerThread):
         return f"Unknown command: {args[0]}"
     
     def echo_handler(self, *args, **kwargs):
+        """
+        Usage: echo <message>
+        Echoes the message back to the console. Specify any variables with a $ prefix.
+        """
         list_args = list(args)
         for i, part in enumerate(list_args):
             if part[0] == '$' and len(part) > 1:
@@ -68,11 +78,19 @@ class ConsoleCommandHandler(WorkerThread):
         return ' '.join(list_args)
     
     def quit_handler(self, *args, **kwargs):
+        """
+        Usage: quit
+        Quits the application.
+        """
         logger.info("Quitting application...")
         QtCore.QCoreApplication.quit()
-        return "Failed to quit application."
+        return "Exit requested"
     
     def uptime_handler(self, *args, **kwargs):
+        """
+        Usage: uptime
+        Displays the application's uptime in days, hours, minutes, and seconds.
+        """
         uptime = time.time() - kwargs['application'].start_time
         days = int(uptime // 86400)
         hrs = int((uptime - days * 86400) // 3600)
@@ -81,7 +99,10 @@ class ConsoleCommandHandler(WorkerThread):
         return f"Uptime: {days} days, {hrs} hours, {mins} minutes, {secs:.2f} seconds"
     
     def fetch_handler(self, *args, **kwargs):
-        
+        """
+        Usage: fetch <spreadsheet_id> <sheet_name>
+        Fetches data from the specified Google Sheets spreadsheet.
+        """
         if len(args) < 2:
             return "Usage: fetch <spreadsheet_id> <sheet_name>"
         try:
@@ -104,32 +125,66 @@ class ConsoleCommandHandler(WorkerThread):
             return "Failed to fetch data from Google Sheets\n" + str(e)
         
     def globals_handler(self, *args, **kwargs):
+        """
+        Usage: globals
+        Displays all global variables in the application.
+        """
         output = "Globals:\n"
         for key, value in globals().items():
             output += f"{key}:\t{value}\n"
         return output
     
     def app_attrs_handler(self, *args, **kwargs):
+        """
+        Usage: app_attrs
+        displays all attributes of the application object.
+        """
         output = "Application Attributes:\n"
         for key, value in kwargs['application'].__dict__.items():
             output += f"{key}:\t{value}\n"
         return output
     
     def help_handler(self, *args, **kwargs):
-        output = "Available commands:\n"
-        for key, value in self.__class__.__dict__.items():
-            if key.endswith("_handler"):
-                output += f"{key[:-8]}\n"
+        """
+        Usage: help [command]
+        Displays help information for specific commands or lists all available commands if [command] is not provided.
+        """
+        if len(args) == 0:
+            output = "Available commands:\n"
+            for key, value in self.__class__.__dict__.items():
+                if key.endswith("_handler"):
+                    output += f"{key[:-8]}\n"
+            output += "Type 'help <command>' for more information on a specific command."
+        else:
+            output = ""
+            for arg in args:
+                if hasattr(self, f"{arg}_handler") and callable(getattr(self, f"{arg}_handler")):
+                    output += f"Help for {arg}:\n"
+                    output += getattr(self, f"{arg}_handler").__doc__ + "\n"
+                else:
+                    output += f"Unknown command: {arg}\n"
         return output
     
     def list_serial_ports_handler(self, *args, **kwargs):
+        """
+        Usage: list_serial_ports
+        Lists all available serial ports on the system.
+        """
         return "Serial Ports:\n" + "\n".join([str(port) for port in serial.tools.list_ports.comports()])
     
     def clear_handler(self, *args, **kwargs):
+        """
+        Usage: clear
+        Clears the console display.
+        """
         kwargs['application'].ConsoleDisplay.clear()
         return ""
     
     def eval_handler(self, *args, **kwargs):
+        """
+        Usage: eval <expression>
+        Evaluates the expression and returns the result.
+        """
         if len(args) < 1:
             return "Usage: eval <expression>"
         try:
@@ -137,6 +192,53 @@ class ConsoleCommandHandler(WorkerThread):
             return str(result)
         except Exception as e:
             return f"Failed to evaluate \"{' '.join(args)}\"\n" + str(e)
+        
+    def listen_handler(self, *args, **kwargs):
+        """
+        Usage: listen <port> [dummy_data]
+        Listens on the specified serial port and displays the received data.
+        Specify dummy_data to simulate data if no serial port is available.
+        """
+        if len(args) < 1:
+            return "Usage: listen <port> [dummy_data]"
+        try:
+            if len(args) > 1:
+                self.port = args[0]
+                while not self.stop:
+                    self.signals.result.emit(self.port + ":\t" + ' '.join(args[1:]))
+                    time.sleep(1)
+            else:
+                port = args[0]
+                if args[0].startswith('$') and len(args[0]) > 1:
+                    port = self._resolve_variable(args[0][1:])
+                    if port is None:
+                        return f"Variable \"{args[0]}\" not found or is None."
+                self.port = port
+                for worker in kwargs['application'].console_workers:
+                    if worker.command == "listen" and worker.args[0] == port and worker != self:
+                        return f"Already listening on port \"{port}\""
+                ser = serial.Serial(port)
+                while not self.stop:
+                    self.signals.result.emit(port + ":\t" + ser.readline().decode('utf-8'))
+                ser.close()
+        except Exception as e:
+            return f"Failed to listen on port \"{port}\"\n" + str(e)
+        
+    def stop_listen_handler(self, *args, **kwargs):
+        """
+        Usage: stop_listen [port]
+        Stops listening on the specified serial ports. If no port is provided, stops all listeners.
+        """
+        if len(args) < 1:
+            for worker in kwargs['application'].console_workers:
+                if worker.command == "listen":
+                    worker.stop = True
+            return "Stopped all serial listeners"
+        for worker in kwargs['application'].console_workers:
+            if worker.command == "listen":
+                if worker.port in args:
+                    worker.stop = True
+                    self.signals.result.emit(f"Stopped listening on port \"{worker.port}\"")
 
 class PeripheralManager(WorkerThread):
     def __init__(self):
@@ -206,6 +308,7 @@ class GoogleSheetTableApp(QMainWindow):
                 console_history = f.read()
                 self.ConsoleDisplay.setPlainText(console_history)
             self.append_console_output("Console history recovered at " + time.ctime())
+            self.ConsoleDisplay.moveCursor(QtGui.QTextCursor.MoveOperation.End)
 
         # Initialize a thread pool for background tasks
         self.threadpool = QtCore.QThreadPool()
@@ -249,6 +352,9 @@ class GoogleSheetTableApp(QMainWindow):
         #self.peripheral_thread.signals.result.connect(self.peripheral_handler)
         #self.threadpool.start(self.peripheral_thread)
 
+        # Console workers list
+        self.console_workers = []
+
         # Connect signals to slots for table operations
         self.table_widget.cellChanged.connect(self.record_change)
         self.save_button.clicked.connect(self.save)
@@ -288,6 +394,13 @@ class GoogleSheetTableApp(QMainWindow):
         )
         if response == QMessageBox.StandardButton.Ok:
             #self.peripheral_thread.stop = True
+            for worker in self.console_workers:
+                worker.stop = True
+            self.append_console_output("Stopping all jobs...")
+            all_stopped = self.threadpool.waitForDone(1000)
+            if not all_stopped:
+                logger.error("Failed to stop all threads")
+                self.append_console_output("Failed to stop all threads")
             console_text = self.ConsoleDisplay.toPlainText()
             with open("console_history.txt", "w") as f:
                 f.write(console_text + '\n')
@@ -506,9 +619,12 @@ class GoogleSheetTableApp(QMainWindow):
 
         # Create a worker for the command
         worker = ConsoleCommandHandler(self, cmd = command_text)
+        self.console_workers.append(worker)
         worker.signals.result.connect(self.append_console_output)
+        worker.signals.finished.connect(lambda: self.console_workers.remove(worker))
         worker.signals.error.connect(lambda e: self.append_console_output("Uncaught exception during execution:\n" + str(e)))
-        worker.run()
+        worker.signals.error.connect(lambda e: logger.error(e))
+        self.threadpool.start(worker)
 
     def append_console_output(self, text):
         """
