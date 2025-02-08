@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Inventory Management</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
@@ -184,7 +184,23 @@
      </widget>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget_2"/>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QPlainTextEdit" name="ConsoleDisplay">
+        <property name="font">
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="ConsoleInput"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
