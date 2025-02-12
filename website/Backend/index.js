@@ -18,6 +18,7 @@ console.log('MongoDB URI:', process.env.MONGO_URI);
 client.on('error', (err) => {
   console.error('Redis Client Error:', err);
 });
+const { getSheetData } = require('./googleSheet');
 
 (async () => {
   try {
@@ -27,6 +28,7 @@ client.on('error', (err) => {
     console.error('Error connecting to Redis:', error);
   }
 })();
+
 // Middleware
 const corsOptions = {
   origin: process.env.CLIENT_URL,
@@ -39,6 +41,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));  // Limit request body to 10KB
 app.use(csrfProtection);
+
 // Provide CSRF token to frontend
 app.get('/api/csrf-token', (req, res) => {
   const csrfToken = req.csrfToken();
@@ -52,6 +55,7 @@ const loginLimiter = rateLimit({
   max: 5,  // Limit each IP to 5 login attempts
   message: 'Too many login attempts. Please try again later.',
 });
+
 // Connect to database
 connectDB().then(db => {
   console.log("Connected to MongoDB successfully.");
@@ -65,9 +69,10 @@ connectDB().then(db => {
       res.status(500).json({ message: "Error fetching collections", error });
     }
   });
+  
   const options = {
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.cert'),
+    key: fs.readFileSync('localhost.key'),
+    cert: fs.readFileSync('localhost.crt'),
   };
   https.createServer(options, app).listen(5000, () => {
     console.log('Secure server running on https://localhost:5000');
@@ -129,10 +134,9 @@ connectDB().then(db => {
       console.error('Error during login:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
+
+
   });
-
-  
-
   
   app.get('/api/protected', authenticateToken, (req, res) => {
     res.json({ message: "Request is valid and token verified!", user: req.user });
@@ -185,3 +189,19 @@ if (process.env.NODE_ENV === 'production') {
     next();
   });
 }
+
+app.get('/api/sheet-data', async (req, res) => {
+  try {
+    console.log("Trying to Grab Spreadsheet")
+    
+    // Provide your spreadsheet ID and the range you want
+    const spreadsheetId = 'YOUR_SPREADSHEET_ID_HERE';
+    const range = 'Sheet1!A1:D'; // Adjust to your data range
+
+    const rows = await getSheetData(spreadsheetId, range);
+    res.json({ data: rows });
+  } catch (error) {
+    console.error('Error fetching sheet data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});

@@ -11,6 +11,9 @@ export const DesktopData = () => {
   const toggleDialog = () => {
     setIsOpen(!isOpen);
   };
+
+  console.log("Debug: Entering Desktop Data")
+
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
@@ -26,7 +29,7 @@ export const DesktopData = () => {
     };
     fetchCsrfToken();
   }, []);
-  
+
   useEffect(() => {
     // Fetch user data from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -34,115 +37,55 @@ export const DesktopData = () => {
       setUserName(storedUser);
     }
   }, []);
+
+  const [tableData, setTableData] = useState([]);
+  useEffect(() => {
+    const fetchSheetData = async () => {
+      try {
+        console.log("Fetching SpreadSheet Data: API Call")
+        const response = await fetch("https://localhost:5000/api/sheet-data");
+        const jsonData = await response.json();
+        setTableData(jsonData.data || []);
+      } catch (err) {
+        console.error("Error fetching sheet data:", err);
+      }
+    };
+    fetchSheetData();
+  }, []);
+
   return (
     <div className="desktop-data">
       <div className="frame">
         <div className="navbar">
           <img className="img" alt="Frame" src="/img/frame-55.png" />
-          <FontAwesomeIcon icon={faUser} className="user-icon" size="lg" onClick={toggleDialog}/>
+          <FontAwesomeIcon icon={faUser} className="user-icon" size="lg" onClick={toggleDialog} />
         </div>
         <div className="hero">
           <div className={`sign-out-container ${isOpen ? "show" : ""}`}>
             <SignOutBox
-                  firstName={userName.firstName}
-                  lastName={userName.lastName}
-                  csrfToken={csrfToken}
-              />
+              firstName={userName.firstName}
+              lastName={userName.lastName}
+              csrfToken={csrfToken}
+            />
           </div>
-          <table className="table">
+          <table>
             <thead>
-                <tr>
-                  <th className="header-cell"><div className="text-wrapper">Product Name</div></th>
-                    <th className="header-cell"><div className="text-wrapper">Part Number</div></th>
-                    <th className="header-cell"><div className="text-wrapper">Amount in Inventory</div></th>
-                    <th className="header-cell"><div className="text-wrapper">Activity</div></th>
-                </tr>
+              <tr>
+                <th>Product Name</th>
+                <th>Part Number</th>
+                <th>Amount in Inventory</th>
+                <th>Activity</th>
+              </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="item-cell"><div className="div">Capacitor</div></td>
-                <td className="item-cell"><div className="div">RX2332</div></td>
-                <td className="item-cell"><div className="div">1</div></td>
-                <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td className="item-cell"><div className="div">Test Tubes</div></td>
-                  <td className="item-cell"><div className="div">SR1443</div></td>
-                  <td className="item-cell"><div className="div">12</div></td>
-                  <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td className="item-cell"><div className="div">Board</div></td>
-                  <td className="item-cell"><div className="div">DII112K</div></td>
-                  <td className="item-cell"><div className="div">165</div></td>
-                  <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td className="item-cell"><div className="div">1K LED</div></td>
-                  <td className="item-cell"><div className="div">LEDR1K</div></td>
-                  <td className="item-cell"><div className="div">13</div></td>
-                  <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td className="item-cell"><div className="div">PX Console</div></td>
-                  <td className="item-cell"><div className="div">PX8899</div></td>
-                  <td className="item-cell"><div className="div">54</div></td>
-                  <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td className="item-cell"><div className="div">Resistor 20 Ohms</div></td>
-                  <td className="item-cell"><div className="div">1KXD3E</div></td>
-                  <td className="item-cell"><div className="div">245</div></td>
-                  <td className="arrow-right-wrapper">
-                    <div className="arrow-container">
-                      <ArrowRight
-                        className="arrow-right-instance"
-                        img="https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/679428d01a5876cee0f3ff15/img/arrow-right@2x.png"
-                        size="forty-eight"
-                      />
-                    </div>
-                  </td>
-              </tr>
+              {tableData.map((row, index) => (
+                <tr key={index}>
+                  <td>{row[0]}</td>
+                  <td>{row[1]}</td>
+                  <td>{row[2]}</td>
+                  <td>{row[3]}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

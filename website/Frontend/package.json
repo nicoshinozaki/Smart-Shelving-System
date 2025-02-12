@@ -17,6 +17,7 @@
     "csurf": "^1.11.0",
     "dotenv": "^16.4.7",
     "express-rate-limit": "^6.10.0",
+    "googleapis": "^144.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,6 +32,6 @@
     "esbuild": "0.24.0",
     "globals": "15.12.0",
     "storybook": "^8.4.6",
-    "vite": "^6.0.4"
+    "vite": "^6.0.11"
   }
 }

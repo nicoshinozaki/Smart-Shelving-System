@@ -8,6 +8,8 @@ export const DesktopLogin = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [attemptCount, setAttemptCount] = useState(0);
   const [rememberMe, setRememberMe] = useState(false);
+
+  console.log("Entering Desktop Login")
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
@@ -39,13 +41,14 @@ export const DesktopLogin = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
+          "X-CSRF-Token": csrfToken,  
         },
         credentials: "include",
         body: JSON.stringify({ email: employeeId, password }),
       });
 
       if (response.ok) {
+        console.log("Login Requested");
         const data = await response.json();
         localStorage.setItem("user", JSON.stringify({ firstName: data.firstName, lastName: data.lastName }));
         window.location.href = "/desktop-data"; // Redirect after successful login

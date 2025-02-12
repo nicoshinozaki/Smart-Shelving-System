@@ -6,4 +6,9 @@ ui_*
 *.log
 
 # Key files, NEVER add these to git!
+smart-shelving-unit-4e010dcbef5a.json
 *.key
+
+# Ignore Node Modules
+website/backend/node_modules/
+website/Frontend/node_modules/

@@ -8,8 +8,8 @@ export default defineConfig({
   server: {
     port: 3000, // Set your required port
     https: {
-      key: fs.readFileSync('certs/key.pem'),     // Path to your private key
-      cert: fs.readFileSync('certs/cert.pem'),   // Path to your certificate
+      key: fs.readFileSync('certs/localhost.pem'),     // Path to your private key
+      cert: fs.readFileSync('certs/localhost.crt'),   // Path to your certificate
     },
     strictPort: true, // Optional: prevents Vite from switching to another port if unavailable
   },
