@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const pool = require('./db'); // from db.js
+const fetch = require('node-fetch');
 const app = express();
+require('dotenv').config();
 
 // Middleware
 app.use(cors());
@@ -68,9 +70,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log('Server running on port 5000');
-});
 
 // server/index.js (add this route)
 app.post('/api/login', async (req, res) => {
@@ -102,5 +101,39 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     console.error('Error in /api/login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+const { google } = require('googleapis');
+const keys = require('./smart-shelving-unit-6c160c25d116.json');
+app.get('/api/sheets-data', async (req, res) => {
+  try {
+    const spreadsheetId = '1fxyyb80V8hgieRpf1MKA9erwP-kD0SLwm6hdXIoRQ4M';
+    const range = 'Sheet1!A1:C30';
+
+    // Create a JWT client using your service account credentials
+    const client = new google.auth.JWT(
+      keys.client_email,
+      null,
+      keys.private_key,
+      ['https://www.googleapis.com/auth/spreadsheets'] // scope for Google Sheets
+    );
+
+    // Authorize the client
+    await client.authorize();
+
+    // Create an instance of the Sheets API
+    const sheets = google.sheets({ version: 'v4', auth: client });
+
+    // Fetch data from the specified range
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
+    });
+
+    res.json(result.data);
+  } catch (error) {
+    console.error('Error fetching sheets data:', error);
+    res.status(500).json({ error: 'Error fetching data' });
   }
 });

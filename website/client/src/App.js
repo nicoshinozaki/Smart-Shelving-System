@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './HomePage';
 import Login from './Login';
+import InventoryData from './InventoryData'
 
 function App() {
   const [data, setData] = useState(null);
@@ -31,6 +32,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/inventorydata" element={<InventoryData/>}/>
         {/* Add more routes as needed */}
       </Routes>
       {/* Footer would go here */}

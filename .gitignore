@@ -7,7 +7,7 @@ ui_*
 
 # Key files, NEVER add these to git!
 *.key
-smart-shelving-unit-4e010dcbef5a.json
+*.json
 
 # Node_Modules Directories
 **/node_modules

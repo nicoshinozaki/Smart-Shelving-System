@@ -64,7 +64,7 @@ function HomePage() {
               <div className="footer-col">
                 <h3>Help</h3>
                 <ul>
-                  <li><a href="#">Support</a></li>
+                  <li><a href="/inventorydata">Support</a></li>
                   <li><a href="#">FAQ</a></li>
                 </ul>
               </div>
