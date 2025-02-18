@@ -197,6 +197,7 @@ class ConsoleCommandHandler(WorkerThread):
                     if worker.command == "listen" and worker.args[0] == port and worker != self:
                         return f"Already listening on port \"{port}\""
                 ser = serial.Serial(port, baudrate=BAUD_RATE, timeout=1)
+                self.signals.result.emit(f"Listening on port \"{port}\"")
                 data = b''
                 while not self.stop:
                     data += ser.read_all()

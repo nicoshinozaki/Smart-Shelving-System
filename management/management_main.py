@@ -4,11 +4,8 @@ from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import numpy as np
-import serial.tools.list_ports
 from Workers import WorkerThread
 from Console import Console
-
-BAUD_RATE = 115200
 
 logger = logging.getLogger(__name__)
 
