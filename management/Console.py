@@ -5,8 +5,6 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QPlainTextEdit, QLineEdit
 from Workers import WorkerThread
 
-BAUD_RATE = 115200
-
 logger = logging.getLogger(__name__)
 
 class ConsoleCommandHandler(WorkerThread):
@@ -196,7 +194,7 @@ class ConsoleCommandHandler(WorkerThread):
                 for worker in kwargs['application'].console.workers:
                     if worker.command == "listen" and worker.args[0] == port and worker != self:
                         return f"Already listening on port \"{port}\""
-                ser = serial.Serial(port, baudrate=BAUD_RATE, timeout=1)
+                ser = serial.Serial(port, baudrate=115200, timeout=1)
                 self.signals.result.emit(f"Listening on port \"{port}\"")
                 data = b''
                 while not self.stop:
