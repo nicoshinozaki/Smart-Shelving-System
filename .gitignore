@@ -7,3 +7,6 @@ ui_*
 
 # Key files, NEVER add these to git!
 *.key
+
+# Console history
+console_history.txt
