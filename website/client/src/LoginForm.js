@@ -1,10 +1,12 @@
 // src/Login.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ function Login() {
         console.log('Login successful! Token:', data.token);
         // 1) Store token (localStorage, cookies, or context)
         // 2) Redirect to a protected page, e.g., /dashboard
+        navigate('/inventorydata');
       } else {
         const errData = await response.json();
         setErrorMsg(errData.error || 'Login failed');

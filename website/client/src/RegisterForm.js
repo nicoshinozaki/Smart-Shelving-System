@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const [email, setEmail]           = useState('');
@@ -6,6 +7,7 @@ const RegisterForm = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError]           = useState('');
   const [message, setMessage]       = useState('');
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
