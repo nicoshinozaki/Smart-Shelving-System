@@ -15,13 +15,6 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
 // Testing Recieving Items from Database
 app.get('/api/items', (req, res) => {
   const items = [
@@ -136,4 +129,10 @@ app.get('/api/sheets-data', async (req, res) => {
     console.error('Error fetching sheets data:', error);
     res.status(500).json({ error: 'Error fetching data' });
   }
+});
+
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

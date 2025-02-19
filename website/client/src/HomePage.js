@@ -28,7 +28,7 @@ function HomePage() {
                 </p>
                 <div className="cta-buttons">
                   <a href="/login" className="btn primary-btn">Log In</a>
-                  <a href="#" className="btn secondary-btn">Sign Up</a>
+                  <a href="/register" className="btn secondary-btn">Sign Up</a>
                 </div>
               </div>
       
@@ -50,7 +50,7 @@ function HomePage() {
                 <ul>
                   <li><a href="#">Home</a></li>
                   <li><a href="/login">Log In</a></li>
-                  <li><a href="#">Sign Up</a></li>
+                  <li><a href="/register">Sign Up</a></li>
                 </ul>
               </div>
               <div className="footer-col">

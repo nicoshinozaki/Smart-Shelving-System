@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react'
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './HomePage';
-import Login from './Login';
+import Login from './LoginForm';
+import Register from './RegisterForm'
 import InventoryData from './InventoryData'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register/>}/>
         <Route path="/inventorydata" element={<InventoryData/>}/>
         {/* Add more routes as needed */}
       </Routes>
