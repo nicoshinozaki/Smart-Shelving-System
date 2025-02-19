@@ -3,9 +3,11 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidge
 from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
+from serial.tools.list_ports import comports
 import numpy as np
 from Workers import WorkerThread
 from Console import Console
+from ScannerDriver import ScannerDriver
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +131,15 @@ class GoogleSheetTableApp(QMainWindow):
         self.console.append_output("Initialized Google Sheet Table App")
         self.console.append_output("Type 'help' for a list of available commands")
 
+        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
+                                     antenna_count = 4,
+                                     scan_time = 1,
+                                     window_size = 10)
+
+        self.scanner.signals.result.connect(self.handle_scan_results)
+        self.threadpool.start(self.scanner)
+        self.console.append_output("Scanner started")
+
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
         # Authenticate with the Google Sheets API
@@ -142,6 +153,9 @@ class GoogleSheetTableApp(QMainWindow):
         values = result.get('values', [])
         
         return values
+    
+    def update_status(self, message):
+        self.statusbar.showMessage(message)
 
     def closeEvent(self, event):
         response = QMessageBox.critical(
@@ -151,7 +165,7 @@ class GoogleSheetTableApp(QMainWindow):
             QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
         )
         if response == QMessageBox.StandardButton.Ok:
-            #self.peripheral_thread.stop = True
+            self.scanner.stop()
             self.console.append_output("Stopping all console jobs...")
             all_stopped = self.console.stop()
             if not all_stopped:
@@ -326,6 +340,14 @@ class GoogleSheetTableApp(QMainWindow):
             self.threadpool.start(worker)
         else:
             return
+        
+    def handle_scan_results(self, results):
+        if type(results) == str:
+            self.console.append_output(results)
+            return
+        self.console.append_output("Scan results:")
+        for antenna_num in results:
+            self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
 
     def push_sheets(self):
         deltas = np.argwhere(self.table_initial_state != self.table_current_state)

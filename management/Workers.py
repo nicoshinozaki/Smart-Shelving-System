@@ -9,6 +9,7 @@ class WorkerSignals(QtCore.QObject):
 class WorkerThread(QtCore.QRunnable):
     def __init__(self, fn, *args, **kwargs):
         super().__init__()
+        self.stop_flag = False
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
@@ -21,3 +22,6 @@ class WorkerThread(QtCore.QRunnable):
         except Exception as e:
             self.signals.error.emit((e, traceback.format_exc()))
         self.signals.finished.emit()
+
+    def stop(self):
+        self.stop_flag = True
