@@ -1,11 +1,13 @@
 // src/Login.js
-import React, { useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CsrfContext } from './CrsfContext';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const csrfToken = useContext(CsrfContext);
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
@@ -13,9 +15,12 @@ function Login() {
     setErrorMsg('');
     
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token' :  csrfToken,
+        },
         body: JSON.stringify({ email, password }),
       });
       
@@ -23,6 +28,7 @@ function Login() {
         const data = await response.json();
         console.log('Login successful! Token:', data.token);
         // 1) Store token (localStorage, cookies, or context)
+        localStorage.setItem('token', data.token);
         // 2) Redirect to a protected page, e.g., /dashboard
         navigate('/inventorydata');
       } else {

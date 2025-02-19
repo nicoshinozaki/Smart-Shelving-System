@@ -8,6 +8,11 @@ ui_*
 # Key files, NEVER add these to git!
 *.key
 *.json
+**/certs
+*.env
 
 # Node_Modules Directories
 **/node_modules
+
+# Build Directories
+**/build

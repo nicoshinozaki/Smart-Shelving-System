@@ -1,21 +1,43 @@
+// Required modules
+const https = require('https');
+const fs = require('fs');
+const path = require('path'); // Needed for joining paths
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const pool = require('./db'); // from db.js
 const fetch = require('node-fetch');
-const app = express();
+const { google } = require('googleapis');
+const jwt = require('jsonwebtoken');
+const keys = require('./smart-shelving-unit-6c160c25d116.json');
 require('dotenv').config();
 
+const app = express();
+
+// ------------------------------
 // Middleware
+// ------------------------------
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
-// Simple test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from the server!' });
+// ------------------------------
+// API Routes
+// ------------------------------
+
+// Set up CSRF protection middleware; store the token in a cookie
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
+
+// Example route to send the CSRF token to the client
+app.get('/api/csrf-token', (req, res) => {
+  // Send the token so that your client-side code can use it for subsequent requests
+  res.json({ csrfToken: req.csrfToken() });
 });
 
-// Testing Recieving Items from Database
+// Testing Receiving Items from Database
 app.get('/api/items', (req, res) => {
   const items = [
     { id: 1, name: 'Item One' },
@@ -25,12 +47,13 @@ app.get('/api/items', (req, res) => {
 });
 
 // Testing Login Feature
-// Example user for demonstration
+// Example user for demonstration (not used in actual login, just for reference)
 const DUMMY_USER = {
   email: 'test@gmail.com',
   password: 'password123'
 };
 
+// Register Endpoint
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,8 +86,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-
-// server/index.js (add this route)
+// Login Endpoint
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,16 +111,21 @@ app.post('/api/login', async (req, res) => {
     }
 
     // 3. Password is correct! (Issue a session or JWT token here)
-    // For now, just respond with success
-    res.json({ message: 'Login successful', userId: user.id });
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '10m' } // token expiration (optional)
+    );
+
+    // 4. Return the token along with a success message
+    res.json({ message: 'Login successful', token, userId: user.id });
   } catch (error) {
     console.error('Error in /api/login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-const { google } = require('googleapis');
-const keys = require('./smart-shelving-unit-6c160c25d116.json');
+// Google Sheets Data Endpoint
 app.get('/api/sheets-data', async (req, res) => {
   try {
     const spreadsheetId = '1fxyyb80V8hgieRpf1MKA9erwP-kD0SLwm6hdXIoRQ4M';
@@ -131,8 +158,34 @@ app.get('/api/sheets-data', async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// ------------------------------
+// Serve React Frontend
+// ------------------------------
+
+// Serve static files from the React app's build folder
+app.use(express.static(path.join(__dirname, 'build')));
+
+// For any route not handled by the API, send back React's index.html file.
+// This supports client-side routing in React.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+// ------------------------------
+// HTTPS Server Setup
+// ------------------------------
+
+// Load SSL certificate and private key (ensure these files exist in a 'certs' folder)
+const privateKey = fs.readFileSync('./certs/key.pem', 'utf8');
+const certificate = fs.readFileSync('./certs/cert.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
+
+// Simple test route (if needed)
+// app.get('/', (req, res) => {
+//   res.json({ message: 'Hello from the server!' });
+// });
+
+// Start the HTTPS server on port 443
+https.createServer(credentials, app).listen(443, () => {
+  console.log('HTTPS Server running on port 443');
 });

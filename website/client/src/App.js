@@ -1,17 +1,19 @@
 import React, {useState, useEffect} from 'react'
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { CsrfProvider } from './CrsfContext';
 import HomePage from './HomePage';
 import Login from './LoginForm';
 import Register from './RegisterForm'
 import InventoryData from './InventoryData'
+import ProtectedRoute from './ProtectedRoute';
 
 function App() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
     // Example endpoint: your server's API or a public API
-    fetch('http://localhost:5000/api/items')
+    fetch('/api/items')
       .then((response) => {
         if (!response.ok) {
           // Handle non-200 HTTP status
@@ -30,13 +32,18 @@ function App() {
   return (
     <Router>
       {/* Header would go here */}
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register/>}/>
-        <Route path="/inventorydata" element={<InventoryData/>}/>
-        {/* Add more routes as needed */}
-      </Routes>
+      <CsrfProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/register" element={<Register/>}/>
+          <Route path="/inventorydata" element={
+            <ProtectedRoute>
+              <InventoryData/>
+            </ProtectedRoute>
+          }/>
+          </Routes>
+      </CsrfProvider>
       {/* Footer would go here */}
     </Router>
   );

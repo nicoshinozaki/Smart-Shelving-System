@@ -6,7 +6,7 @@ function InventoryData() {
 
   useEffect(() => {
     // Adjust the URL if needed (e.g., include full domain for production)
-    fetch('http://localhost:5000/api/sheets-data')
+    fetch('/api/sheets-data')
       .then(response => response.json())
       .then(data => {
         // Assuming your API returns data in the form:

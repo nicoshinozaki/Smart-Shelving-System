@@ -1,12 +1,14 @@
-import React, { use, useState } from 'react';
+import React, { use, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CsrfContext } from './CrsfContext';
 
 const RegisterForm = () => {
-  const [email, setEmail]           = useState('');
-  const [password, setPassword]     = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError]           = useState('');
-  const [message, setMessage]       = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const csrfToken = useContext(CsrfContext);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -19,9 +21,12 @@ const RegisterForm = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
+      const response = await fetch('/api/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token' : csrfToken,
+         },
         body: JSON.stringify({ email, password })
       });
       const data = await response.json();
