@@ -89,7 +89,7 @@ app.post('/api/register', async (req, res) => {
 // Login Endpoint
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     // 1. Find user by email
     const result = await pool.query(
@@ -110,15 +110,24 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // 3. Password is correct! (Issue a session or JWT token here)
+    // 3. Generate a JWT token with expiration based on rememberMe
+    const expiresIn = rememberMe ? '7d' : '10m';
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '10m' } // token expiration (optional)
+      { expiresIn }
     );
 
-    // 4. Return the token along with a success message
-    res.json({ message: 'Login successful', token, userId: user.id });
+    // 4. Set the token as an HTTP-only cookie
+    res.cookie('token', token, {
+      httpOnly: true, // Cannot be accessed via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+      sameSite: 'strict', // Helps protect against CSRF
+      maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 10 * 60 * 1000, // 7 days or 10 minutes (in ms)
+    });
+
+    // 5. Respond with success (do not return the token in JSON, since it's in the cookie)
+    res.json({ message: 'Login successful', userId: user.id });
   } catch (error) {
     console.error('Error in /api/login:', error);
     res.status(500).json({ error: 'Internal Server Error' });

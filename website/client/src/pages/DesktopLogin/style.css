@@ -1,0 +1,442 @@
+.desktop-login {
+    align-items: center;
+    background-color: #0e0c31;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    position: relative;
+    overflow: clip;
+  }
+  
+  .desktop-login .frame-50 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: clamp(5px, 5vh, 15px) clamp(10px, 5vw, 175px);
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .navbar-5 {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 784px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .frame-51 {
+    flex: 0 0 auto;
+    margin-bottom: -8px;
+    margin-left: -4px;
+    position: relative;
+  }
+  
+  .desktop-login .hero-7 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 458px;
+    justify-content: space-around;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .frame-52 {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 10px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .text-wrapper-34 {
+    align-self: stretch;
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 75px;
+    font-weight: 400;
+    height: 116px;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .text-wrapper-35 {
+    align-self: stretch;
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 25px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .frame-53 {
+    align-self: stretch;
+    flex: 1;
+    flex-grow: 1;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .input-wrapper {
+    background-image: url(../../../public/img/rectangle-22-4.png);
+    background-size: 100% 100%;
+    height: 42px;
+    left: -4px;
+    position: relative;
+    width: 325px;
+    z-index: 2;
+  }
+  .desktop-login .error-message {
+    color: red;
+    font-size: 20px;
+    margin-top: 10px;
+    font-family: "Outfit", Helvetica;
+  }
+  .desktop-login .checkbox-frame{
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 8px;
+    padding: 10px 0 20px 0;
+    z-index: 2;
+  }
+  .checkbox-frame input[type="checkbox"] {
+    appearance: none; /* Remove default styles */
+    width: 24px; /* Adjust checkbox size */
+    height: 24px;
+    border: 1px solid white; /* White outline */
+    border-radius: 4px; /* Optional for rounded corners */
+    background-color: transparent; /* Transparent background */
+    cursor: pointer; /* Change cursor on hover */
+    position: relative;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    z-index: 2;
+    
+  }
+  .checkbox-frame input[type="checkbox"]:hover {
+    border-color: #ddd; /* Lighter outline on hover */
+  }
+  .checkbox-frame input[type="checkbox"]:checked::before {
+    content: "✕"; /* Display 'X' inside checkbox */
+    font-size: 20px; /* Adjust size of X to fit perfectly */
+    font-weight: bold;
+    color: white; /* White color for the X */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .checkbox-frame label {
+    font-size: 18px;
+    font-family: "Outfit", Helvetica;
+    color: white; /* Adjust label color */
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .desktop-login .element {
+    background-color: transparent;
+    border: 0;
+    color: #bfbfbf59;
+    font-family: "Outfit", Helvetica;
+    font-size: 15px;
+    font-weight: 400;
+    height: 25px;
+    left: 13px;
+    letter-spacing: 0;
+    line-height: 0.2;
+    padding: 0;
+    position: relative;
+    top: 3px;
+    width: 90%;
+  }
+  
+  .desktop-login .element:focus{
+    outline: none;
+  }
+  .desktop-login .element::placeholder {
+    color: #bfbfbf36;
+  }
+  
+  .desktop-login .label {
+    align-self: stretch;
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 25px;
+    font-weight: 400;
+    height: 39px;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .password {
+    background-color: transparent;
+    border: 0;
+    color: #bfbfbf59;
+    font-family: "Outfit", Helvetica;
+    font-size: 15px;
+    font-weight: 400;
+    height: 25px;
+    left: 13px;
+    letter-spacing: 0;
+    line-height: normal;
+    padding: 0;
+    position: relative;
+    top: 3px;
+    width: 90%;
+  }
+  .desktop-login .password:focus{
+    outline: none;
+  }
+  .desktop-login .password::placeholder {
+    color: #bfbfbf36;
+  }
+  .desktop-login .sign-in-button-wrapper {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 10px;
+    justify-content: center;
+    padding: 1px 0px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .sign-in-button {
+    height: 34px;
+    position: relative;
+    width: 117px;
+    z-index: 1;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .desktop-login .overlap-group-3 {
+    background-image: url(../../../public/img/rectangle-22-2.png);
+    background-size: 100% 100%;
+    height: 42px;
+    left: -4px;
+    position: relative;
+    width: 125px;
+  }
+  
+  .desktop-login .text-wrapper-36 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    left: 33px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    top: 3px;
+  }
+  
+  .desktop-login .footer-7 {
+    align-items: center;
+    align-self: stretch;
+    background-color: transparent;
+    display: flex;
+    height: 159px;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .frame-54 {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-grow: 1;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+  }
+  
+  .desktop-login .text-wrapper-37 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    height: 129px;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: 83px;
+  }
+  
+  .desktop-login .frame-55 {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .desktop-login .frame-56 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+    padding: 10px 3px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .text-wrapper-38 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: fit-content;
+  }
+  
+  .desktop-login .frame-57 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px 3px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-login .home-log-in-sign-up-7 {
+    align-self: stretch;
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .frame-58 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .desktop-login .text-wrapper-39 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: 80px;
+  }
+  
+  .desktop-login .email-website-7 {
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .text-wrapper-40 {
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-login .support-FAQ-7 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+    width: fit-content;
+  }
+  
+  .desktop-login .ellipse-13 {
+    background-color: #87d0d080;
+    border-radius: 294px/297px;
+    filter: blur(305px);
+    height: 594px;
+    left: -218px;
+    position: absolute;
+    top: 269px;
+    width: 588px;
+    z-index: 0;
+  }
+  
+  .desktop-login .ellipse-14 {
+    height: 574px;
+    left: 560px;
+    position: absolute;
+    top: 0;
+    width: 1090px;
+    z-index: 0;
+  }
+  
+  .desktop-login .rectangle-7 {
+    align-self: stretch;
+    height: 8px;
+    position: relative;
+    width: 100%;
+  }

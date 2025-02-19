@@ -1,6 +1,6 @@
 import React, { use, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CsrfContext } from './CrsfContext';
+import { CsrfContext } from '../../CrsfContext';
 
 const RegisterForm = () => {
   const [email, setEmail] = useState('');
