@@ -4,12 +4,13 @@ import logging
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QPlainTextEdit, QLineEdit
 from Workers import WorkerThread
+from ScannerDriver import ScannerDriver
+import traceback
 
 logger = logging.getLogger(__name__)
 
 class ConsoleCommandHandler(WorkerThread):
     def __init__(self, application, cmd = ""):
-        self.stop = False
         parts = cmd.split()
         self.command = parts[0]
         self.cmd = cmd
@@ -27,8 +28,7 @@ class ConsoleCommandHandler(WorkerThread):
         return self.cmd
     
     def __del__(self):
-        self.stop = True
-        time.sleep(0.1)
+        self.stop_flag = True
 
     def _resolve_variable(self, var_name):
         if var_name in globals():
@@ -176,7 +176,7 @@ class ConsoleCommandHandler(WorkerThread):
         try:
             if len(args) > 1:
                 self.port = args[0]
-                while not self.stop:
+                while not self.stop_flag:
                     self.signals.result.emit(self.port + ":\t" + ' '.join(args[1:]))
                     time.sleep(1)
             else:
@@ -197,7 +197,7 @@ class ConsoleCommandHandler(WorkerThread):
                 ser = serial.Serial(port, baudrate=115200, timeout=1)
                 self.signals.result.emit(f"Listening on port \"{port}\"")
                 data = b''
-                while not self.stop:
+                while not self.stop_flag:
                     data += ser.read_all()
                     line = None
                     if b'\n' in data:
@@ -206,6 +206,7 @@ class ConsoleCommandHandler(WorkerThread):
                     if line:
                         self.signals.result.emit(line.decode('utf-8', errors="replace"))
                 ser.close()
+                return f"Serial port {port} closed"
         except Exception as e:
             return f"Failed to listen on port \"{port}\"\n" + str(e)
         
@@ -217,12 +218,12 @@ class ConsoleCommandHandler(WorkerThread):
         if len(args) < 1:
             for worker in kwargs['application'].console.workers:
                 if worker.command == "listen":
-                    worker.stop = True
+                    worker.stop()
             return "Stopped all serial listeners"
         for worker in kwargs['application'].console.workers:
             if worker.command == "listen":
                 if worker.port in args:
-                    worker.stop = True
+                    worker.stop()
                     self.signals.result.emit(f"Stopped listening on port \"{worker.port}\"")
     
     def ps_handler(self, *args, **kwargs):
@@ -234,6 +235,14 @@ class ConsoleCommandHandler(WorkerThread):
         for i, worker in enumerate(kwargs['application'].console.workers):
             output += f"{i} - {worker}\n"
         return output
+    
+    def trigger_scan_handler(self, *args, **kwargs):
+        """
+        Usage: scan
+        Scans the specified device for RFID tags.
+        """
+        kwargs['application'].scanner.trigger()
+        return "Triggered scan"
 
 class Console(object):
     def __init__(self, application, display: QPlainTextEdit, input: QLineEdit):
