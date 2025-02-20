@@ -1,15 +1,21 @@
 #!/bin/bash
 
 cd management
-python3 -m venv .venv
+pyenv local 3.9.10
+python3 -m venv .venv_py_3.9.10
 
 # Activate virtual environment
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-    source .venv/bin/activate  # macOS/Linux
+    source .venv_py_3.9.10/bin/activate  # macOS/Linux
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "win32" ]]; then
-    source .venv/Scripts/activate  # Windows
+    source .venv_py_3.9.10/Scripts/activate  # Windows
 else
     echo "Unsupported OS type: $OSTYPE"
+    exit 1
+fi
+
+if [[ -z "$VIRTUAL_ENV" ]]; then
+    echo "Error: Virtual environment not activated!"
     exit 1
 fi
 
@@ -19,6 +25,7 @@ if [ ! -f requirements.txt ]; then
 fi
 
 echo "Installing required packages..."
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt > /dev/null
 
 
