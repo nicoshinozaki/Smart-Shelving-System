@@ -25,6 +25,7 @@ if [ ! -f requirements.txt ]; then
 fi
 
 echo "Installing required packages..."
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt > /dev/null
 
 
