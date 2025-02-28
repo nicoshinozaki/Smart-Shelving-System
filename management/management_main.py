@@ -130,15 +130,7 @@ class GoogleSheetTableApp(QMainWindow):
         logger.info("Initialized Google Sheet Table App")
         self.console.append_output("Initialized Google Sheet Table App")
         self.console.append_output("Type 'help' for a list of available commands")
-
-        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
-                                     antenna_count = 4,
-                                     scan_time = 1,
-                                     window_size = 10)
-
-        self.scanner.signals.result.connect(self.handle_scan_results)
-        self.threadpool.start(self.scanner)
-        self.console.append_output("Scanner started")
+        self.start_scanner()
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
@@ -165,6 +157,7 @@ class GoogleSheetTableApp(QMainWindow):
             QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
         )
         if response == QMessageBox.StandardButton.Ok:
+            self.scanner.signals.finished.disconnect()
             self.scanner.stop()
             self.console.append_output("Stopping all console jobs...")
             all_stopped = self.console.stop()
@@ -348,6 +341,18 @@ class GoogleSheetTableApp(QMainWindow):
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
+
+    def start_scanner(self):
+        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
+                                     antenna_count = 4,
+                                     scan_time = 1,
+                                     window_size = 10)
+        self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
+        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
+        self.scanner.signals.finished.connect(self.start_scanner)
+        self.scanner.signals.result.connect(self.handle_scan_results)
+        self.console.append_output("Scanner started")
+        self.threadpool.start(self.scanner)
 
     def push_sheets(self):
         deltas = np.argwhere(self.table_initial_state != self.table_current_state)
