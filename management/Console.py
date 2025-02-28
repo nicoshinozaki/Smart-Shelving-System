@@ -5,6 +5,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QPlainTextEdit, QLineEdit
 from Workers import WorkerThread
 from ScannerDriver import ScannerDriver
+from ZebraSerialConfig import ZebraSerialConfig
 import traceback
 
 logger = logging.getLogger(__name__)
@@ -243,6 +244,31 @@ class ConsoleCommandHandler(WorkerThread):
         """
         kwargs['application'].scanner.trigger()
         return "Triggered scan"
+
+    def zebra_conf_handler(self, *args, **kwargs):
+        """
+        Usage: zebra_conf
+        Configures the Zebra RFID reader using information specified in zebra.conf file.
+        Will not work if the file is not present.
+        """
+        try:
+            with open("zebra.conf", "r") as f:
+                config = {}
+                for line in f:
+                    key, value = line.strip().split('=', 1)
+                    config[key.strip()] = value.strip()
+                chromedriver_path = config.get('chromedriver_path')
+                url = config.get('url')
+                password = config.get('password')
+            zebra_interface = ZebraSerialConfig(chromedriver_path, url, password)
+            self.signals.result.emit("Starting chromedriver...")
+            kwargs['application'].update_status("Configuring Zebra RFID reader...")
+            zebra_interface.connect()
+            return "Zebra RFID reader successfully configured"
+        except Exception as e:
+            kwargs['application'].update_status("Ready")
+            return f"Failed to configure Zebra RFID reader\n" + str(e)
+            
 
 class Console(object):
     def __init__(self, application, display: QPlainTextEdit, input: QLineEdit):

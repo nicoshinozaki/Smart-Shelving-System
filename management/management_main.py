@@ -26,41 +26,51 @@ class PeripheralManager(WorkerThread):
 
 class GoogleSheetTableApp(QMainWindow):
     """
-    A PyQt5 application for managing and editing Google Sheets data in a table format.
+    A PyQt application for managing a Google Sheets table.
     Attributes:
         spreadsheet_id (str): The ID of the Google Sheets spreadsheet.
         sheet_name (str): The name of the sheet within the spreadsheet.
-        threadpool (QThreadPool): A thread pool for managing background tasks.
-        undo_stack (list): A stack to track undo changes.
-        redo_stack (list): A stack to track redo changes.
+        start_time (float): The start time of the application.
+        ConsoleDisplay (QPlainTextEdit): The console display widget.
+        ConsoleInput (QLineEdit): The console input widget.
+        console (Console): The console object for handling console operations.
+        threadpool (QThreadPool): The thread pool for managing background tasks.
+        undo_stack (list): Stack to track undo operations.
+        redo_stack (list): Stack to track redo operations.
         table_widget (QTableWidget): The table widget displaying the Google Sheets data.
-        save_button (QPushButton): The button to save changes to Google Sheets.
-        reload_button (QPushButton): The button to reload the table data from Google Sheets.
-        statusbar (QStatusBar): The status bar to display messages.
-        peripheral_thread (PeripheralManager): A thread to manage peripheral tasks.
-        table_initial_state (np.ndarray): The initial state of the table data.
-        table_current_state (np.ndarray): The current state of the table data.
+        save_button (QPushButton): The button to save changes.
+        reload_button (QPushButton): The button to reload the table.
+        statusbar (QStatusBar): The status bar for displaying messages.
+        colors (dict): Dictionary of color values for table cell formatting.
+        table_initial_state (np.ndarray): Initial state of the table data.
+        table_current_state (np.ndarray): Current state of the table data.
     Methods:
         fetch_sheets(spreadsheet_id, sheet_name):
             Fetches data from the specified Google Sheets spreadsheet and sheet.
+        update_status(message):
+            Updates the status bar with the given message.
         closeEvent(event):
             Handles the close event of the application, prompting the user for confirmation.
         peripheral_handler(*args, **kwargs):
-            Handles result signals from the peripheral manager.
+            Handles peripheral messages and displays them in a message box.
         load_table(data):
-            Loads data into the table widget and initializes table states.
+            Loads the given data into the table widget.
         record_change(row, column):
-            Records changes made to the table cells and updates undo/redo stacks.
+            Records changes made to the table cells and updates the undo/redo stacks.
         undo():
             Undoes the last change made to the table.
         redo():
             Redoes the last undone change to the table.
         save():
-            Saves changes made to the table to Google Sheets.
+            Saves the current changes to the Google Sheets spreadsheet.
         reload_table():
-            Reloads the table data from Google Sheets, discarding unsaved changes.
+            Reloads the table data from the Google Sheets spreadsheet.
+        handle_scan_results(results):
+            Handles the results of a scan and displays them in the console.
+        start_scanner():
+            Starts the scanner for peripheral devices.
         push_sheets():
-            Pushes changes made to the table to Google Sheets.
+            Pushes the current changes to the Google Sheets spreadsheet.
     """
     def __init__(self, spreadsheet_id, sheet_name):
         self.start_time = time.time()

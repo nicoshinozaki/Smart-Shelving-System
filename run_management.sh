@@ -6,7 +6,11 @@ python3 -m venv .venv_py_3.9.10
 
 # Activate virtual environment
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-    source .venv_py_3.9.10/bin/activate  # macOS/Linux
+    if [ "$SHELL" == "/usr/bin/fish" ]; then
+        source .venv_py_3.9.10/bin/activate.fish  # macOS/Linux with fish shell
+    else
+        source .venv_py_3.9.10/bin/activate  # macOS/Linux with other shells
+    fi
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "win32" ]]; then
     source .venv_py_3.9.10/Scripts/activate  # Windows
 else
