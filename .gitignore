@@ -1,6 +1,9 @@
 # Python virtual environment
 **/.venv/
+**/.venv_py_3.9.10/
 ui_*
+*__pycache__
+*.python-version
 
 # Logs
 *.log
