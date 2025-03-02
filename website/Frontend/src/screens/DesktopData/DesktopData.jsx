@@ -14,7 +14,7 @@ export const DesktopData = () => {
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const csrfResponse = await fetch("https://localhost:5000/api/csrf-token", {
+        const csrfResponse = await fetch("https://localhost:8080/api/csrf-token", {
           credentials: "include", // Include cookies
         });
         const csrfData = await csrfResponse.json();

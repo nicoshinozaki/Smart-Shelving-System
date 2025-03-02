@@ -1,0 +1,34 @@
+.arrow-right {
+  left: 0;
+  top: 0;
+}
+
+.arrow-right.thirty-two {
+  height: 32px;
+  width: 32px;
+}
+
+.arrow-right.forty {
+  height: 40px;
+  width: 40px;
+}
+
+.arrow-right.twenty {
+  height: 20px;
+  width: 20px;
+}
+
+.arrow-right.sixteen {
+  height: 16px;
+  width: 16px;
+}
+
+.arrow-right.forty-eight {
+  height: 48px;
+  width: 48px;
+}
+
+.arrow-right.twenty-four {
+  height: 24px;
+  width: 24px;
+}

@@ -59,7 +59,7 @@ const router = createBrowserRouter([
 export const App = () => {
   const [data, setData] = useState(null);
   useEffect(() => {
-    fetch('https://localhost:5000/api/items')
+    fetch('https://localhost:8080/api/items')
     .then((response) => {
       if (!response.ok) {
         // Handle non-200 HTTP status

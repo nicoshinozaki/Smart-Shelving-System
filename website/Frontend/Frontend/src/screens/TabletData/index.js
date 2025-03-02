@@ -1,0 +1,1 @@
+export { TabletData } from "./TabletData";

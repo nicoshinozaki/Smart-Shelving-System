@@ -69,8 +69,8 @@ connectDB().then(db => {
     key: fs.readFileSync('server.key'),
     cert: fs.readFileSync('server.cert'),
   };
-  https.createServer(options, app).listen(5000, () => {
-    console.log('Secure server running on https://localhost:5000');
+  https.createServer(options, app).listen(8080, () => {
+    console.log('Secure server running on https://localhost:8080');
   });
   app.get('/api/items', (req, res) => {
     const items = [
