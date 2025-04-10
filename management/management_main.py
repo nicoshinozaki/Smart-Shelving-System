@@ -233,9 +233,9 @@ class GoogleSheetTableApp(QMainWindow):
                     self.table_initial_state[row_index - 1][col_index - 1] = cell_data
                     self.table_current_state[row_index - 1][col_index - 1] = cell_data
 
-    def record_change(self, row, column):
+    def record_change(self, row, column, value = None):
         previous_value = self.table_current_state[row][column]
-        new_value = self.table_widget.item(row, column).text()
+        new_value = (self.table_widget.item(row, column).text() if value is None else str(value))
 
         if previous_value == new_value:
             return
@@ -243,6 +243,8 @@ class GoogleSheetTableApp(QMainWindow):
         self.redo_stack.clear()
         if self.table_initial_state[row, column] != new_value:
             self.table_widget.item(row, column).setForeground(self.colors['brightText'])
+            if value is not None:
+                self.table_widget.item(row, column).setText(new_value)
         else:
             self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.undo_stack.append((row, column, previous_value))
@@ -351,12 +353,13 @@ class GoogleSheetTableApp(QMainWindow):
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
+            self.record_change(antenna_num, 1, len(results[antenna_num]))
 
     def start_scanner(self):
         self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
                                      antenna_count = 4,
-                                     scan_time = 1,
-                                     window_size = 10)
+                                     scan_time = 10,
+                                     window_size = 1)
         self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
         self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
         self.scanner.signals.finished.connect(self.start_scanner)

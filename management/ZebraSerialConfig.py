@@ -27,25 +27,20 @@ class ZebraSerialConfig:
             return WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, element)))
 
     def alert_check(self):
-        try:
-            WebDriverWait(self.driver, 10).until(EC.alert_is_present())
-            alert = self.driver.switch_to.alert
-            print(f"Alert detected: {alert.text}")
-            alert.accept() 
-        except NoAlertPresentException:
-            print("No alert detected.")
+        WebDriverWait(self.driver, 10).until(EC.alert_is_present())
+        alert = self.driver.switch_to.alert
+        alert.accept() 
 
     def connect(self):
         try:
             # Load Zebra Website (Configured IP Address)
             self.driver.get(self.url)
-            print(self.driver)
             
             # Switch to Login Frame
-            self.frame_switch(self.driver, "Login")
+            self.frame_switch("Login")
             
             # Enter Password
-            password_field = self.wait_for_element(self.driver, "ID", "password")
+            password_field = self.wait_for_element("ID", "password")
             password_field.send_keys("SmartShelving1!")
 
             # Click Login Button
@@ -53,44 +48,45 @@ class ZebraSerialConfig:
             ActionChains(self.driver).move_to_element(login_button).click().perform()
 
             # Check for Active Session
-            self.alert_check(self.driver)
+            self.alert_check()
 
             # Switch to menuId Frame
             time.sleep(5)
-            print(self.driver.page_source)  # Check if elements exist in the source
-            self.frame_switch(self.driver, "menuId")
+            #print(self.driver.page_source)  # Check if elements exist in the source
+            self.driver.page_source
+            self.frame_switch("menuId")
 
             # Load up Serial Port Configuration and Connect
-            communication_button = self.wait_for_element(self.driver, "XPATH", "//*[@id='v_mnu_01']/ul/li[6]/a")
+            communication_button = self.wait_for_element("XPATH", "//*[@id='v_mnu_01']/ul/li[6]/a")
             communication_button.click()
 
-            serial_port_config_button = self.wait_for_element(self.driver, "ID", "SerialPortConfigLink")
+            serial_port_config_button = self.wait_for_element("ID", "SerialPortConfigLink")
             serial_port_config_button.click()
             
             time.sleep(5)
 
             # Switch to Content Frame
             self.driver.switch_to.parent_frame()
-            self.frame_switch(self.driver, "content")
+            self.frame_switch("content")
 
             # Wait for 'Connect' Button and Configure Serial Port
-            connect_button = self.wait_for_element(self.driver, "ID", "btnLLRPConnect")
+            connect_button = self.wait_for_element("ID", "btnLLRPConnect")
             button_text = connect_button.text.strip()
         
             if button_text == "Connect":
-                print("Button is in now in 'Connect' state.")
+                #print("Button is in now in 'Connect' state.")
                 ActionChains(self.driver).move_to_element(connect_button).click().perform()
 
                 # Wait until the text changes to "Disconnect"
                 WebDriverWait(self.driver, 10).until(
                     lambda d: d.find_element(By.ID, "btnLLRPConnect").text.strip() == "Disconnect"
                 )
-            time.sleep(20)
-
-        except serial.SerialException as e:
-            print(f"Error with Zebra Interface: {e}")
-        except KeyboardInterrupt:
-            print("\nExiting program.")
+            self.driver.close()
+            self.service.stop()
+        except Exception as e:
+            self.driver.close()
+            self.service.stop()
+            raise e
 
 
 if __name__ == "__main__":
