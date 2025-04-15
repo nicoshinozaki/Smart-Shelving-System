@@ -8,6 +8,7 @@ import numpy as np
 from Workers import WorkerThread
 from Console import Console
 from ScannerDriver import ScannerDriver
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +96,13 @@ class GoogleSheetTableApp(QMainWindow):
         # Initialize stacks to track edit changes
         self.undo_stack = []
         self.redo_stack = []
+
+        # Set drawer tag table list
+        self.last_scan_results = None
+        if os.path.exists("tags.json"):
+            self.console.append_output("Loading last scan results from tags.json")
+            with open("tags.json", "r") as f:
+                self.last_scan_results = json.load(f)
 
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
@@ -350,6 +358,11 @@ class GoogleSheetTableApp(QMainWindow):
         if type(results) == str:
             self.console.append_output(results)
             return
+        for antenna in results:
+            results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
+        self.last_scan_results = results
+        with open("tags.json", "w") as f:
+            json.dump(self.last_scan_results, f)
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")

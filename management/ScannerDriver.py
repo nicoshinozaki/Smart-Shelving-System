@@ -2,7 +2,6 @@ from Workers import WorkerSignals, WorkerThread
 import serial
 import time
 import numpy as np
-import traceback
 from PyQt6.QtCore import QTimer, QEventLoop
 from copy import deepcopy
 import re

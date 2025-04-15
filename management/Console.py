@@ -276,6 +276,36 @@ class ConsoleCommandHandler(WorkerThread):
                 if retried == 2:
                     kwargs['application'].update_status("Ready")
                     return f"Failed to configure Zebra RFID reader\n" + str(e)
+                
+    def query_handler(self, *args, **kwargs):
+        """
+        Usage: query [drawer number]
+        Queries the tag IDs for a drawer number.
+        If no drawer number is provided, queries all drawers.
+        """
+        results = kwargs['application'].last_scan_results
+        if results is None:
+            return "No scan results available"
+        if len(args) < 1:
+            for drawer, tags in results.items():
+                tags = [str(tag) for tag in tags]
+                if len(tags) == 0:
+                    self.signals.result.emit(f"Drawer {drawer}:\t" + "No tags found")
+                else:
+                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+        else:
+            try:
+                drawer = int(args[0])
+                if drawer not in results:
+                    return f"Invalid drawer number: {drawer}"
+                tags = results[drawer]
+                tags = [str(tag) for tag in tags]
+                if len(tags) == 0:
+                    return f"No tags found for drawer {drawer}"
+                else:
+                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+            except ValueError:
+                return f"Invalid drawer number: {args[0]}"
             
 
 class Console(object):
