@@ -371,6 +371,7 @@ class GoogleSheetTableApp(QMainWindow):
                 except KeyError:
                     changed.append(antenna)
 
+        if not changed: return
         response = QMessageBox.critical(
             self,
             "Inventory Changed",
