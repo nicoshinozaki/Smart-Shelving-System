@@ -29,9 +29,11 @@ if [ ! -f requirements.txt ]; then
 fi
 
 echo "Installing required packages..."
-pip install --upgrade pip setuptools wheel
+# pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt > /dev/null
 
+echo "Setting up ethernet port IP address..."
+nmcli connection up zebra-eth
 
 # Setting environmental variable for API credential file
 export CREDENTIALS_PATH=../secret/smart-shelving-27ec95c7dcb2.json

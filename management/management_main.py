@@ -1,4 +1,4 @@
-import sys, os, logging, time
+import sys, os, logging, time, platform
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit
 from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
@@ -356,10 +356,17 @@ class GoogleSheetTableApp(QMainWindow):
             self.record_change(antenna_num, 1, len(results[antenna_num]))
 
     def start_scanner(self):
-        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
-                                     antenna_count = 4,
-                                     scan_time = 10,
-                                     window_size = 1)
+        current_os = platform.system()
+        if (current_os == "Darwin"):
+            self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
+                                        antenna_count = 4,
+                                        scan_time = 10,
+                                        window_size = 1)
+        elif (current_os == "Linux"):
+            self.scanner = ScannerDriver(self, device = '/dev/ttyUSB0',
+                                        antenna_count = 4,
+                                        scan_time = 10,
+                                        window_size = 1)
         self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
         self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
         self.scanner.signals.finished.connect(self.start_scanner)
