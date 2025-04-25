@@ -360,6 +360,22 @@ class GoogleSheetTableApp(QMainWindow):
             return
         for antenna in results:
             results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
+        changed = []
+        for antenna in results:
+            if results[antenna] != self.last_scan_results[antenna]:
+                changed.append(antenna)
+
+        response = QMessageBox.critical(
+            self,
+            f"Inventory changed for antennas {changed}.",
+            "Record changes?",
+            QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
+        )
+
+        if response == QMessageBox.StandardButton.Cancel:
+            self.console.append_output("Changes not recorded")
+            return
+
         self.last_scan_results = results
         with open("tags.json", "w") as f:
             json.dump(self.last_scan_results, f)
