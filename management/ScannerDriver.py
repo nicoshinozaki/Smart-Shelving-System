@@ -2,7 +2,6 @@ from Workers import WorkerSignals, WorkerThread
 import serial
 import time
 import numpy as np
-import traceback
 from PyQt6.QtCore import QTimer, QEventLoop
 from copy import deepcopy
 import re
@@ -39,13 +38,13 @@ class ScannerDriver(WorkerThread):
         super().__init__(self._run)
 
     def trigger(self):
+        return "Deserted Function"
         self.trigger_flag = True
 
     def _run(self):
         while not self.stop_flag:
-            if self.trigger_flag:
-                self.trigger_flag = False
-                self._scan()
+            self._scan()
+            time.sleep(1)
         return f"{str(self)} stopped"
 
     def _scan(self):
