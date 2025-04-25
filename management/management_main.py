@@ -362,7 +362,7 @@ class GoogleSheetTableApp(QMainWindow):
             results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
         changed = []
         for antenna in results:
-            if results[antenna] != self.last_scan_results[antenna]:
+            if self.last_scan_results is None or results[antenna] != self.last_scan_results[antenna]:
                 changed.append(antenna)
 
         response = QMessageBox.critical(
