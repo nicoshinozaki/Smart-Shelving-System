@@ -17,13 +17,6 @@ class ScannerDriver(WorkerThread):
         self.device = device                # serial device
         self.antenna_count = antenna_count
 
-        # flag for controlling the scanner
-        # this is highly unpythonic, just like how
-        # we terminate a worker thread.
-        # However, it is the only workaround
-        # I have found as of Feb 28th.
-        self.trigger_flag = False
-
         # state variable is a dictionary of dictionaries
         # Each key is the antenna number
         # Each value is a dictionary of tags
@@ -34,12 +27,15 @@ class ScannerDriver(WorkerThread):
             self.state[i] = {}
         self.scan_time = scan_time
         self.window_size = window_size
+        self.stop_flag = False
         
         super().__init__(self._run)
 
-    def trigger(self):
-        return "Deserted Function"
-        self.trigger_flag = True
+    def stop(self):
+        self.stop_flag = True
+        
+    def start(self):
+        self.stop_flag = False
 
     def _run(self):
         while not self.stop_flag:

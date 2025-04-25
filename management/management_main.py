@@ -372,6 +372,7 @@ class GoogleSheetTableApp(QMainWindow):
                     changed.append(antenna)
 
         if not changed: return
+        self.scanner.stop()
         response = QMessageBox.critical(
             self,
             "Inventory Changed",
@@ -381,6 +382,7 @@ class GoogleSheetTableApp(QMainWindow):
 
         if response == QMessageBox.StandardButton.Cancel:
             self.console.append_output("Changes not recorded")
+            self.scanner.start()
             return
 
         self.last_scan_results = results
@@ -390,6 +392,7 @@ class GoogleSheetTableApp(QMainWindow):
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
             self.record_change(antenna_num, 1, len(results[antenna_num]))
+        self.scanner.start()
 
     def start_scanner(self):
         self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
