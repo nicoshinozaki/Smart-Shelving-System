@@ -5,6 +5,7 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QPlainTextEdit, QLineEdit
 from Workers import WorkerThread
 from ScannerDriver import ScannerDriver
+from ZebraSerialConfig import ZebraSerialConfig
 import traceback
 
 logger = logging.getLogger(__name__)
@@ -243,6 +244,69 @@ class ConsoleCommandHandler(WorkerThread):
         """
         kwargs['application'].scanner.trigger()
         return "Triggered scan"
+
+    def zebra_conf_handler(self, *args, **kwargs):
+        """
+        Usage: zebra_conf
+        Configures the Zebra RFID reader using information specified in zebra.conf file.
+        Will not work if the file is not present.
+        """
+        retried = 0
+        while True:
+            try:
+                with open("zebra.conf", "r") as f:
+                    config = {}
+                    for line in f:
+                        key, value = line.strip().split('=', 1)
+                        config[key.strip()] = value.strip()
+                    chromedriver_path = config.get('chromedriver_path')
+                    url = config.get('url')
+                    password = config.get('password')
+                zebra_interface = ZebraSerialConfig(chromedriver_path, url, password)
+                self.signals.result.emit("Starting chromedriver...")
+                kwargs['application'].update_status("Configuring Zebra RFID reader...")
+                zebra_interface.connect()
+                kwargs['application'].update_status("Ready")
+                return "Zebra RFID reader successfully configured"
+            except Exception as e:
+                retried += 1
+                self.signals.result.emit(f"Failed to configure Zebra RFID reader\n" + str(e))
+                self.signals.result.emit(f"Retrying...{retried+1}/3")
+                time.sleep(3)
+                if retried == 2:
+                    kwargs['application'].update_status("Ready")
+                    return f"Failed to configure Zebra RFID reader\n" + str(e)
+                
+    def query_handler(self, *args, **kwargs):
+        """
+        Usage: query [drawer number]
+        Queries the tag IDs for a drawer number.
+        If no drawer number is provided, queries all drawers.
+        """
+        results = kwargs['application'].last_scan_results
+        if results is None:
+            return "No scan results available"
+        if len(args) < 1:
+            for drawer, tags in results.items():
+                tags = [str(tag) for tag in tags]
+                if len(tags) == 0:
+                    self.signals.result.emit(f"Drawer {drawer}:\t" + "No tags found")
+                else:
+                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+        else:
+            try:
+                drawer = int(args[0])
+                if drawer not in results:
+                    return f"Invalid drawer number: {drawer}"
+                tags = results[drawer]
+                tags = [str(tag) for tag in tags]
+                if len(tags) == 0:
+                    return f"No tags found for drawer {drawer}"
+                else:
+                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+            except ValueError:
+                return f"Invalid drawer number: {args[0]}"
+            
 
 class Console(object):
     def __init__(self, application, display: QPlainTextEdit, input: QLineEdit):

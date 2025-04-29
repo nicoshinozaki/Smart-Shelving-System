@@ -13,3 +13,6 @@ ui_*
 
 # Console history
 console_history.txt
+
+# scan results
+tags.json

@@ -8,6 +8,7 @@ import numpy as np
 from Workers import WorkerThread
 from Console import Console
 from ScannerDriver import ScannerDriver
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -26,41 +27,51 @@ class PeripheralManager(WorkerThread):
 
 class GoogleSheetTableApp(QMainWindow):
     """
-    A PyQt5 application for managing and editing Google Sheets data in a table format.
+    A PyQt application for managing a Google Sheets table.
     Attributes:
         spreadsheet_id (str): The ID of the Google Sheets spreadsheet.
         sheet_name (str): The name of the sheet within the spreadsheet.
-        threadpool (QThreadPool): A thread pool for managing background tasks.
-        undo_stack (list): A stack to track undo changes.
-        redo_stack (list): A stack to track redo changes.
+        start_time (float): The start time of the application.
+        ConsoleDisplay (QPlainTextEdit): The console display widget.
+        ConsoleInput (QLineEdit): The console input widget.
+        console (Console): The console object for handling console operations.
+        threadpool (QThreadPool): The thread pool for managing background tasks.
+        undo_stack (list): Stack to track undo operations.
+        redo_stack (list): Stack to track redo operations.
         table_widget (QTableWidget): The table widget displaying the Google Sheets data.
-        save_button (QPushButton): The button to save changes to Google Sheets.
-        reload_button (QPushButton): The button to reload the table data from Google Sheets.
-        statusbar (QStatusBar): The status bar to display messages.
-        peripheral_thread (PeripheralManager): A thread to manage peripheral tasks.
-        table_initial_state (np.ndarray): The initial state of the table data.
-        table_current_state (np.ndarray): The current state of the table data.
+        save_button (QPushButton): The button to save changes.
+        reload_button (QPushButton): The button to reload the table.
+        statusbar (QStatusBar): The status bar for displaying messages.
+        colors (dict): Dictionary of color values for table cell formatting.
+        table_initial_state (np.ndarray): Initial state of the table data.
+        table_current_state (np.ndarray): Current state of the table data.
     Methods:
         fetch_sheets(spreadsheet_id, sheet_name):
             Fetches data from the specified Google Sheets spreadsheet and sheet.
+        update_status(message):
+            Updates the status bar with the given message.
         closeEvent(event):
             Handles the close event of the application, prompting the user for confirmation.
         peripheral_handler(*args, **kwargs):
-            Handles result signals from the peripheral manager.
+            Handles peripheral messages and displays them in a message box.
         load_table(data):
-            Loads data into the table widget and initializes table states.
+            Loads the given data into the table widget.
         record_change(row, column):
-            Records changes made to the table cells and updates undo/redo stacks.
+            Records changes made to the table cells and updates the undo/redo stacks.
         undo():
             Undoes the last change made to the table.
         redo():
             Redoes the last undone change to the table.
         save():
-            Saves changes made to the table to Google Sheets.
+            Saves the current changes to the Google Sheets spreadsheet.
         reload_table():
-            Reloads the table data from Google Sheets, discarding unsaved changes.
+            Reloads the table data from the Google Sheets spreadsheet.
+        handle_scan_results(results):
+            Handles the results of a scan and displays them in the console.
+        start_scanner():
+            Starts the scanner for peripheral devices.
         push_sheets():
-            Pushes changes made to the table to Google Sheets.
+            Pushes the current changes to the Google Sheets spreadsheet.
     """
     def __init__(self, spreadsheet_id, sheet_name):
         self.start_time = time.time()
@@ -85,6 +96,13 @@ class GoogleSheetTableApp(QMainWindow):
         # Initialize stacks to track edit changes
         self.undo_stack = []
         self.redo_stack = []
+
+        # Set drawer tag table list
+        self.last_scan_results = None
+        if os.path.exists("tags.json"):
+            self.console.append_output("Loading last scan results from tags.json")
+            with open("tags.json", "r") as f:
+                self.last_scan_results = json.load(f)
 
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
@@ -130,15 +148,7 @@ class GoogleSheetTableApp(QMainWindow):
         logger.info("Initialized Google Sheet Table App")
         self.console.append_output("Initialized Google Sheet Table App")
         self.console.append_output("Type 'help' for a list of available commands")
-
-        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
-                                     antenna_count = 4,
-                                     scan_time = 1,
-                                     window_size = 10)
-
-        self.scanner.signals.result.connect(self.handle_scan_results)
-        self.threadpool.start(self.scanner)
-        self.console.append_output("Scanner started")
+        self.start_scanner()
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
@@ -165,6 +175,7 @@ class GoogleSheetTableApp(QMainWindow):
             QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
         )
         if response == QMessageBox.StandardButton.Ok:
+            self.scanner.signals.finished.disconnect()
             self.scanner.stop()
             self.console.append_output("Stopping all console jobs...")
             all_stopped = self.console.stop()
@@ -230,9 +241,9 @@ class GoogleSheetTableApp(QMainWindow):
                     self.table_initial_state[row_index - 1][col_index - 1] = cell_data
                     self.table_current_state[row_index - 1][col_index - 1] = cell_data
 
-    def record_change(self, row, column):
+    def record_change(self, row, column, value = None):
         previous_value = self.table_current_state[row][column]
-        new_value = self.table_widget.item(row, column).text()
+        new_value = (self.table_widget.item(row, column).text() if value is None else str(value))
 
         if previous_value == new_value:
             return
@@ -240,6 +251,8 @@ class GoogleSheetTableApp(QMainWindow):
         self.redo_stack.clear()
         if self.table_initial_state[row, column] != new_value:
             self.table_widget.item(row, column).setForeground(self.colors['brightText'])
+            if value is not None:
+                self.table_widget.item(row, column).setText(new_value)
         else:
             self.table_widget.item(row, column).setForeground(self.colors['text'])
         self.undo_stack.append((row, column, previous_value))
@@ -345,9 +358,53 @@ class GoogleSheetTableApp(QMainWindow):
         if type(results) == str:
             self.console.append_output(results)
             return
+        for antenna in results:
+            results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
+        changed = []
+        if self.last_scan_results is None:
+            self.changed = list(results.keys())
+        else:
+            for antenna in results:
+                try:
+                    if set(results[antenna]) != set(self.last_scan_results[antenna]):
+                        changed.append(antenna)
+                except KeyError:
+                    changed.append(antenna)
+
+        if not changed: return
+        self.scanner.stop()
+        response = QMessageBox.critical(
+            self,
+            "Inventory Changed",
+            f"Inventory changed for drawers {changed}, Record changes?",
+            QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
+        )
+
+        if response == QMessageBox.StandardButton.Cancel:
+            self.console.append_output("Changes not recorded")
+            self.scanner.start()
+            return
+
+        self.last_scan_results = results
+        with open("tags.json", "w") as f:
+            json.dump(self.last_scan_results, f)
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
+            self.record_change(antenna_num, 1, len(results[antenna_num]))
+        self.scanner.start()
+
+    def start_scanner(self):
+        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
+                                     antenna_count = 4,
+                                     scan_time = 10,
+                                     window_size = 1)
+        self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
+        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
+        self.scanner.signals.finished.connect(self.start_scanner)
+        self.scanner.signals.result.connect(self.handle_scan_results)
+        self.console.append_output("Scanner started")
+        self.threadpool.start(self.scanner)
 
     def push_sheets(self):
         deltas = np.argwhere(self.table_initial_state != self.table_current_state)
