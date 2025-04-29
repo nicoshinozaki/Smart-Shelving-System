@@ -56,7 +56,7 @@ const DUMMY_USER = {
 // Register Endpoint
 app.post('/api/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {firstName, lastName, email, password } = req.body;
 
     // 1. Hash the password
     const saltRounds = 10;
@@ -64,10 +64,10 @@ app.post('/api/register', async (req, res) => {
 
     // 2. Insert into the database
     const result = await pool.query(
-      `INSERT INTO users (email, password_hash)
-       VALUES ($1, $2)
-       RETURNING id, email, created_at`,
-      [email, hashedPassword]
+      `INSERT INTO users (first_name, last_name, email, password_hash)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, first_name, last_name, email, created_at`,
+      [firstName, lastName, email, hashedPassword]
     );
 
     // 3. Respond with user info (excluding password)
@@ -93,7 +93,7 @@ app.post('/api/login', async (req, res) => {
 
     // 1. Find user by email
     const result = await pool.query(
-      'SELECT id, email, password_hash FROM users WHERE email = $1',
+      'SELECT first_name, last_name, id, email, password_hash, role FROM users WHERE email = $1',
       [email]
     );
 
@@ -113,7 +113,7 @@ app.post('/api/login', async (req, res) => {
     // 3. Generate a JWT token with expiration based on rememberMe
     const expiresIn = rememberMe ? '7d' : '10m';
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn }
     );
@@ -127,10 +127,38 @@ app.post('/api/login', async (req, res) => {
     });
 
     // 5. Respond with success (do not return the token in JSON, since it's in the cookie)
-    res.json({ message: 'Login successful', userId: user.id });
+    res.json({ 
+      message: 'Login successful', 
+      firstName: user.first_name,
+      lastName: user.last_name,
+      userId: user.id,
+      role: user.role
+    });
   } catch (error) {
     console.error('Error in /api/login:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/logout', async (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+  res.json({ message: 'Logged out' });
+});
+
+app.get('/api/me', (req, res) => {
+  const token = req.cookies.token;           // <-- HTTP-only cookie
+  if (!token) return res.status(401).json({ error: 'Not authenticated' });
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // send back whatever you need on the front end
+    return res.json({ id: payload.id, email: payload.email, role: payload.role });
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
 });
 
@@ -164,6 +192,60 @@ app.get('/api/sheets-data', async (req, res) => {
   } catch (error) {
     console.error('Error fetching sheets data:', error);
     res.status(500).json({ error: 'Error fetching data' });
+  }
+});
+
+// Google Sheets Update Endpoint
+app.post('/api/update-sheet', async (req, res) => {
+  try {
+    // Expect the frontend to send an array of objects
+    // Each object should have properties like productName, partNumber, and inventoryAmount
+    const updatedData = req.body;  
+
+    // Map the updated data to a 2D array.
+    // Here, we create a header row and then one row per item.
+    const header = ['Drawer Number', 'Item Number', 'Inventory Amount'];
+    const values = updatedData.map(item => [
+      item.productName,
+      item.partNumber,
+      // Ensure that inventory is sent as a number
+      Number(item.inventoryAmount)
+    ]);
+
+    values.unshift(header);
+
+    const spreadsheetId = '1fxyyb80V8hgieRpf1MKA9erwP-kD0SLwm6hdXIoRQ4M';
+    const numRows = values.length;
+    const range = `Sheet1!A1:C${numRows + 1}`;
+
+    // Create a JWT client using your service account credentials
+    const client = new google.auth.JWT(
+      keys.client_email,
+      null,
+      keys.private_key,
+      ['https://www.googleapis.com/auth/spreadsheets'] // Scope for Google Sheets
+    );
+
+    // Authorize the client
+    await client.authorize();
+
+    // Create an instance of the Sheets API
+    const sheets = google.sheets({ version: 'v4', auth: client });
+
+    // Use the update method to write the data back to the sheet
+    const responseData = await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range,
+      valueInputOption: 'RAW',
+      resource: {
+        values: values,
+      },
+    });
+
+    res.json({ status: 'success', data: responseData.data });
+  } catch (error) {
+    console.error('Error updating sheets data:', error);
+    res.status(500).json({ error: 'Error updating sheets data' });
   }
 });
 

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { CsrfContext } from '../../CrsfContext';
 
 const RegisterForm = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,7 +29,7 @@ const RegisterForm = () => {
             'Content-Type': 'application/json',
             'X-CSRF-Token' : csrfToken,
          },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({firstName, lastName, email, password})
       });
       const data = await response.json();
       
@@ -47,6 +49,22 @@ const RegisterForm = () => {
   return (
     <form onSubmit={handleRegister}>
       <h2>Register</h2>
+      <input
+        type="text"
+        placeholder="First Name"
+        value={firstName}
+        onChange={e => setFirstName(e.target.value)}
+        required
+      /><br />
+
+      <input
+        type="text"
+        placeholder="Last Name"
+        value={lastName}
+        onChange={e => setLastName(e.target.value)}
+        required
+      /><br />
+
       <input 
         type="email" 
         placeholder="Email" 
@@ -54,6 +72,7 @@ const RegisterForm = () => {
         onChange={(e) => setEmail(e.target.value)}
         required
       /><br />
+
       <input 
         type="password" 
         placeholder="Password" 
@@ -61,6 +80,7 @@ const RegisterForm = () => {
         onChange={(e) => setPassword(e.target.value)}
         required
       /><br />
+
       <input 
         type="password" 
         placeholder="Confirm Password" 
@@ -68,6 +88,7 @@ const RegisterForm = () => {
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
       /><br />
+
       <button type="submit">Register</button>
       {error && <p style={{color: 'red'}}>{error}</p>}
       {message && <p style={{color: 'green'}}>{message}</p>}

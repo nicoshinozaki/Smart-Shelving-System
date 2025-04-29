@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import './App.css';
-import './global.css'
+import './global.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CsrfProvider } from './CrsfContext';
 import DesktopHomePage from './pages/DesktopHome/DesktopHome';
 import Login from './pages/DesktopLogin/DesktopLogin';
 import Register from './pages/DesktopRegister/DesktopRegister'
 import InventoryData from './pages/DesktopInventoryData/DesktopInventoryData'
+import AdminPage from './pages/DesktopAdmin/DesktopAdmin';
 import ProtectedRoute from './ProtectedRoute';
 
 function App() {
@@ -39,11 +40,16 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/inventorydata" element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRole={"Employee"}>
               <InventoryData/>
             </ProtectedRoute>
-          }/>
-          </Routes>
+            }/>
+          <Route path="/adminpage" element={
+            <ProtectedRoute requiredRole={"Admin"}>
+              <AdminPage/>
+            </ProtectedRoute>
+            }/>
+        </Routes>
       </CsrfProvider>
       {/* Footer would go here */}
     </Router>

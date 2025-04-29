@@ -1,0 +1,27 @@
+.sign-in-button {
+    height: 34px;
+    position: relative;
+    top: 35px;
+    width: 117px;
+  }
+  
+  .sign-in-button .overlap-group {
+    background-image: url(https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/67c149d9fc6a133f98924933/img/rectangle-22.png);
+    background-size: 100% 100%;
+    height: 42px;
+    left: -4px;
+    position: relative;
+    width: 125px;
+  }
+  
+  .sign-in-button .sign-in {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    left: 33px;
+    letter-spacing: 0;
+    line-height: normal;
+    position: absolute;
+    top: 3px;
+  }

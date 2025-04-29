@@ -1,16 +1,31 @@
-import React from 'react';
+// ProtectedRoute.js
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {
-  // Simple authentication check: assume user is "logged in" if a token exists
-  const isLoggedIn = !!localStorage.getItem('token'); // or any flag that indicates login
+export default function ProtectedRoute({ children, requiredRole }) {
+  const [auth, setAuth] = useState({ loading: true, isAuth: false, role: null });
 
-  if (!isLoggedIn) {
-    // Redirect to login if not authenticated
+  useEffect(() => {
+    fetch('/api/me', { credentials: 'include' })
+      .then(async res => {
+        if (res.ok) {
+          const body = await res.json();
+          setAuth({ loading: false, isAuth: true, role: body.role });
+        } else {
+          setAuth({ loading: false, isAuth: false, role: null });
+        }
+      })
+      .catch(() => setAuth({ loading: false, isAuth: false, role: null }));
+  }, []);
+
+  if (auth.loading) {
+    return <div>Loading…</div>;
+  }
+  if (!auth.isAuth) {
     return <Navigate to="/login" replace />;
   }
-
+  if (requiredRole && auth.role.toLowerCase() !== requiredRole.toLowerCase()) {
+    return <Navigate to="/" replace />;
+  }
   return children;
-};
-
-export default ProtectedRoute;
+}

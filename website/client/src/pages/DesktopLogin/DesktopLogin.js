@@ -28,9 +28,27 @@ function Login() {
       });
       
       if (response.ok) {
-        const data = await response.json();
-        console.log('Login successful! Token:', data.token);
-        navigate('/inventorydata');
+        const {message, firstName, lastName, userId, role} = await response.json();
+        console.log('Login successful! Message:', message, 
+          '\nFirst Name:', firstName, 
+          '\nLast Name:', lastName, 
+          '\nUserID: ', userId, 
+          '\nRole:', role, );
+          
+        localStorage.setItem('user', JSON.stringify({
+          firstName: firstName,
+          lastName:  lastName
+        }));
+
+        if(role == 'Admin'){
+          console.log("Navigating to Admin Page");
+          navigate('/adminpage');
+        } else {
+          console.log("Navigating to Inventory Data Page");
+          navigate('/inventorydata');
+          console.log("Done Navigating");
+        }
+        
       } else {
         const errData = await response.json();
         setErrorMsg(errData.error || 'Login failed');
@@ -64,7 +82,7 @@ function Login() {
                       name="employeeId"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      pattern="[\-a-zA-Z0-9~!$%^&amp;*_=+\}\{'?]+(\.[\-a-zA-Z0-9~!$%^&amp;*_=+\}\{'?]+)*@[a-zA-Z0-9_][\-a-zA-Z0-9_]*(\.[\-a-zA-Z0-9_]+)*\.[cC][oO][mM](:[0-9]{1,5})?"
+                      pattern="[\-a-zA-Z0-9~!$%^&amp;*_=+\}\{'?]+(\.[\-a-zA-Z0-9~!$%^&amp;*_=+\}\{'?]+)*@[a-zA-Z0-9_][\-a-zA-Z0-9_]*(\.[\-a-zA-Z0-9_]+)*\.[a-zA-Z0-9_][\-a-zA-Z0-9_]*(:[0-9]{1,5})?"
                       title="Please enter a valid email address"
                       required 
                     />
