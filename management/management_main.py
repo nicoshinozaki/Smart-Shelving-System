@@ -152,6 +152,8 @@ class GoogleSheetTableApp(QMainWindow):
         
         zebra_config_thread = WorkerThread(self.zebra_serial_config)
         zebra_config_thread.signals.finished.connect(lambda: self.start_scanner())
+        self.threadpool.start(zebra_config_thread)
+        self.console.append_output("Configuring Zebra RFID reader...")
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
