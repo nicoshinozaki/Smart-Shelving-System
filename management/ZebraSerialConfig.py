@@ -1,7 +1,11 @@
 import serial
 import time
+<<<<<<< HEAD
 import platform
 import configparser
+=======
+import platform, configparser
+>>>>>>> eceaf0f8e6c8ecfee820016096b8009c067da7a7
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -93,20 +97,11 @@ class ZebraSerialConfig:
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read("zebra.conf")
+    config.read('zebra.conf')
     
-    current_os = platform.system()
-    
-    if(current_os == "Darwin"): 
-        chromedriver_path = "/opt/homebrew/bin/chromedriver"
-    elif(current_os == "Linux"):
-        chromedriver_path = "/usr/bin/chromedriver"
-    else:
-        raise Exception(f"No chromedriver path found for OS: {current_os}")
-        
-    #chromedriver_path = subprocess.check_output(["which", "chromedriver"]).decode().strip()
-    url = config["url"]
-    password = config["password"]
+    chromedriver_path = subprocess.check_output(["which", "chromedriver"]).decode().strip()
+    url = config['url']
+    password = config['password']
     
     zebra_interface = ZebraSerialConfig(chromedriver_path, url, password)
     zebra_interface.connect()

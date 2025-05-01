@@ -38,10 +38,11 @@ class ScannerDriver(WorkerThread):
         self.stop_flag = False
 
     def _run(self):
-        while not self.stop_flag:
-            self._scan()
-            time.sleep(1)
-        return f"{str(self)} stopped"
+        while True:
+            if self.stop_flag:
+                time.sleep(0.2)
+            else:
+                self._scan()
 
     def _scan(self):
         self._clear_state()

@@ -8,6 +8,7 @@ import numpy as np
 from Workers import WorkerThread
 from Console import Console
 from ScannerDriver import ScannerDriver
+from ZebraSerialConfig import ZebraSerialConfig
 import json
 
 logger = logging.getLogger(__name__)
@@ -148,7 +149,11 @@ class GoogleSheetTableApp(QMainWindow):
         logger.info("Initialized Google Sheet Table App")
         self.console.append_output("Initialized Google Sheet Table App")
         self.console.append_output("Type 'help' for a list of available commands")
-        self.start_scanner()
+        
+        zebra_config_thread = WorkerThread(self.zebra_serial_config)
+        zebra_config_thread.signals.finished.connect(lambda: self.start_scanner())
+        self.threadpool.start(zebra_config_thread)
+        self.console.append_output("Configuring Zebra RFID reader...")
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
@@ -163,6 +168,33 @@ class GoogleSheetTableApp(QMainWindow):
         values = result.get('values', [])
         
         return values
+    
+    def zebra_serial_config(self):
+        retried = 0
+        while True:
+            try:
+                with open("zebra.conf", "r") as f:
+                    config = {}
+                    for line in f:
+                        key, value = line.strip().split('=', 1)
+                        config[key.strip()] = value.strip()
+                    chromedriver_path = config.get('chromedriver_path')
+                    url = config.get('url')
+                    password = config.get('password')
+                zebra_interface = ZebraSerialConfig(chromedriver_path, url, password)
+                self.update_status("Configuring Zebra RFID reader...")
+                zebra_interface.connect()
+                self.update_status("Ready")
+                self.console.append_output("Zebra RFID reader successfully configured")
+                return
+            except Exception as e:
+                retried += 1
+                self.update_status(f"Retrying Zebra configuration...{retried+1}/3")
+                time.sleep(1)
+                if retried == 2:
+                    self.console.append_output("Failed to configure Zebra RFID reader\n" + str(e))
+                    self.update_status("Zebra reader configuration failed\n")
+                    return
     
     def update_status(self, message):
         self.statusbar.showMessage(message)
@@ -399,16 +431,15 @@ class GoogleSheetTableApp(QMainWindow):
         if (current_os == "Darwin"):
             self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
                                         antenna_count = 4,
-                                        scan_time = 10,
-                                        window_size = 1)
+                                        scan_time = 3,
+                                        window_size = 3)
         elif (current_os == "Linux"):
             self.scanner = ScannerDriver(self, device = '/dev/ttyUSB0',
                                         antenna_count = 4,
-                                        scan_time = 10,
-                                        window_size = 1)
+                                        scan_time = 3,
+                                        window_size = 3)
         self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
-        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
-        self.scanner.signals.finished.connect(self.start_scanner)
+        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped on critical error, restart required."))
         self.scanner.signals.result.connect(self.handle_scan_results)
         self.console.append_output("Scanner started")
         self.threadpool.start(self.scanner)
