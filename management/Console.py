@@ -362,5 +362,5 @@ class Console(object):
         Stops all running workers.
         """
         for worker in self.workers:
-            worker.stop = True
+            worker.stop_flag = True
         return self.threadpool.waitForDone(1000)

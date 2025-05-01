@@ -13,19 +13,6 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class PeripheralManager(WorkerThread):
-    def __init__(self):
-        self.stop = False
-        super().__init__(self.peripheral_manager)
-
-    def peripheral_manager(self):
-        i = 0
-        while not self.stop:
-            if i % 20 == 0:
-                self.signals.result.emit("Peripheral Manager is running...")
-            time.sleep(1)
-            i += 1
-
 class GoogleSheetTableApp(QMainWindow):
     """
     A PyQt application for managing a Google Sheets table.
@@ -104,6 +91,9 @@ class GoogleSheetTableApp(QMainWindow):
             self.console.append_output("Loading last scan results from tags.json")
             with open("tags.json", "r") as f:
                 self.last_scan_results = json.load(f)
+            keys = list(self.last_scan_results.keys())
+            for key in keys:
+                self.last_scan_results[int(key)] = self.last_scan_results.pop(key) 
 
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
@@ -390,10 +380,13 @@ class GoogleSheetTableApp(QMainWindow):
         if type(results) == str:
             self.console.append_output(results)
             return
+        if results == None:
+            return
         for antenna in results:
             results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
         changed = []
         if self.last_scan_results is None:
+            self.console.append_output("No tag history found.")
             self.changed = list(results.keys())
         else:
             for antenna in results:
@@ -401,10 +394,11 @@ class GoogleSheetTableApp(QMainWindow):
                     if set(results[antenna]) != set(self.last_scan_results[antenna]):
                         changed.append(antenna)
                 except KeyError:
+                    self.console.append_output(f"New antenna {antenna} detected.")
                     changed.append(antenna)
 
         if not changed: return
-        self.scanner.stop()
+        self.scanner.pause()
         response = QMessageBox.critical(
             self,
             "Inventory Changed",

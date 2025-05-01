@@ -1,11 +1,7 @@
 import serial
 import time
-<<<<<<< HEAD
 import platform
 import configparser
-=======
-import platform, configparser
->>>>>>> eceaf0f8e6c8ecfee820016096b8009c067da7a7
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
