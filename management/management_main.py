@@ -186,6 +186,7 @@ class GoogleSheetTableApp(QMainWindow):
                 zebra_interface.connect()
                 self.update_status("Ready")
                 self.console.append_output("Zebra RFID reader successfully configured")
+                return
             except Exception as e:
                 retried += 1
                 self.update_status(f"Retrying Zebra configuration...{retried+1}/3")
