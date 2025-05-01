@@ -431,8 +431,8 @@ class GoogleSheetTableApp(QMainWindow):
         if (current_os == "Darwin"):
             self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
                                         antenna_count = 4,
-                                        scan_time = 10,
-                                        window_size = 1)
+                                        scan_time = 3,
+                                        window_size = 3)
         elif (current_os == "Linux"):
             self.scanner = ScannerDriver(self, device = '/dev/ttyUSB0',
                                         antenna_count = 4,
