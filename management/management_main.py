@@ -189,10 +189,11 @@ class GoogleSheetTableApp(QMainWindow):
             except Exception as e:
                 retried += 1
                 self.update_status(f"Retrying Zebra configuration...{retried+1}/3")
-                time.sleep(3)
+                time.sleep(1)
                 if retried == 2:
                     self.console.append_output("Failed to configure Zebra RFID reader\n" + str(e))
                     self.update_status("Zebra reader configuration failed\n")
+                    return
     
     def update_status(self, message):
         self.statusbar.showMessage(message)
