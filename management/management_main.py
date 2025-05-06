@@ -1,6 +1,7 @@
 import sys, os, logging, time, platform
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit
 from PyQt6 import uic, QtGui, QtCore
+from PyQt6.QtGui import QColor, QBrush
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from serial.tools.list_ports import comports
@@ -113,8 +114,8 @@ class GoogleSheetTableApp(QMainWindow):
 
         # Save color values for later use
         self.colors = {
-            'base': self.table_widget.palette().base(),
-            'alternateBase': self.table_widget.palette().alternateBase(),
+        #    'base': QBrush(QColor(76, 0, 153)),
+        #    'alternateBase':QBrush(QColor(204, 0, 204)),
             'brightText': self.table_widget.palette().brightText(),
             'text': self.table_widget.palette().text()
         }
@@ -247,6 +248,17 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table_widget.setStyleSheet("""
+        QTableWidget {
+            background-color: #7F00FF; /* Dark purple */
+            alternate-background-color: #B266FF; /* Lighter purple */
+        }
+        
+        QTableWidget::item:selected {
+            background-color: #E566FF; /* light purple */
+            color: black;
+        }
+        """)
         for row in range(len(data)-1):
             brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
             for col in range(len(data[0])-1):
