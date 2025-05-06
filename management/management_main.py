@@ -1,4 +1,4 @@
-import sys, os, logging, time
+import sys, os, logging, time, platform
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit
 from PyQt6 import uic, QtGui, QtCore
 from google.oauth2.service_account import Credentials
@@ -8,22 +8,10 @@ import numpy as np
 from Workers import WorkerThread
 from Console import Console
 from ScannerDriver import ScannerDriver
+from ZebraSerialConfig import ZebraSerialConfig
 import json
 
 logger = logging.getLogger(__name__)
-
-class PeripheralManager(WorkerThread):
-    def __init__(self):
-        self.stop = False
-        super().__init__(self.peripheral_manager)
-
-    def peripheral_manager(self):
-        i = 0
-        while not self.stop:
-            if i % 20 == 0:
-                self.signals.result.emit("Peripheral Manager is running...")
-            time.sleep(1)
-            i += 1
 
 class GoogleSheetTableApp(QMainWindow):
     """
@@ -103,6 +91,9 @@ class GoogleSheetTableApp(QMainWindow):
             self.console.append_output("Loading last scan results from tags.json")
             with open("tags.json", "r") as f:
                 self.last_scan_results = json.load(f)
+            keys = list(self.last_scan_results.keys())
+            for key in keys:
+                self.last_scan_results[int(key)] = self.last_scan_results.pop(key) 
 
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
@@ -148,7 +139,11 @@ class GoogleSheetTableApp(QMainWindow):
         logger.info("Initialized Google Sheet Table App")
         self.console.append_output("Initialized Google Sheet Table App")
         self.console.append_output("Type 'help' for a list of available commands")
-        self.start_scanner()
+        
+        zebra_config_thread = WorkerThread(self.zebra_serial_config)
+        zebra_config_thread.signals.finished.connect(lambda: self.start_scanner())
+        self.threadpool.start(zebra_config_thread)
+        self.console.append_output("Configuring Zebra RFID reader...")
 
     @staticmethod
     def fetch_sheets(spreadsheet_id, sheet_name):
@@ -163,6 +158,33 @@ class GoogleSheetTableApp(QMainWindow):
         values = result.get('values', [])
         
         return values
+    
+    def zebra_serial_config(self):
+        retried = 0
+        while True:
+            try:
+                with open("zebra.conf", "r") as f:
+                    config = {}
+                    for line in f:
+                        key, value = line.strip().split('=', 1)
+                        config[key.strip()] = value.strip()
+                    chromedriver_path = config.get('chromedriver_path')
+                    url = config.get('url')
+                    password = config.get('password')
+                zebra_interface = ZebraSerialConfig(chromedriver_path, url, password)
+                self.update_status("Configuring Zebra RFID reader...")
+                zebra_interface.connect()
+                self.update_status("Ready")
+                self.console.append_output("Zebra RFID reader successfully configured")
+                return
+            except Exception as e:
+                retried += 1
+                self.update_status(f"Retrying Zebra configuration...{retried+1}/3")
+                time.sleep(1)
+                if retried == 2:
+                    self.console.append_output("Failed to configure Zebra RFID reader\n" + str(e))
+                    self.update_status("Zebra reader configuration failed\n")
+                    return
     
     def update_status(self, message):
         self.statusbar.showMessage(message)
@@ -358,10 +380,13 @@ class GoogleSheetTableApp(QMainWindow):
         if type(results) == str:
             self.console.append_output(results)
             return
+        if results == None:
+            return
         for antenna in results:
             results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
         changed = []
         if self.last_scan_results is None:
+            self.console.append_output("No tag history found.")
             self.changed = list(results.keys())
         else:
             for antenna in results:
@@ -369,10 +394,11 @@ class GoogleSheetTableApp(QMainWindow):
                     if set(results[antenna]) != set(self.last_scan_results[antenna]):
                         changed.append(antenna)
                 except KeyError:
+                    self.console.append_output(f"New antenna {antenna} detected.")
                     changed.append(antenna)
 
         if not changed: return
-        self.scanner.stop()
+        self.scanner.pause()
         response = QMessageBox.critical(
             self,
             "Inventory Changed",
@@ -395,13 +421,19 @@ class GoogleSheetTableApp(QMainWindow):
         self.scanner.start()
 
     def start_scanner(self):
-        self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
-                                     antenna_count = 4,
-                                     scan_time = 10,
-                                     window_size = 1)
+        current_os = platform.system()
+        if (current_os == "Darwin"):
+            self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
+                                        antenna_count = 4,
+                                        scan_time = 3,
+                                        window_size = 3)
+        elif (current_os == "Linux"):
+            self.scanner = ScannerDriver(self, device = '/dev/ttyUSB0',
+                                        antenna_count = 4,
+                                        scan_time = 3,
+                                        window_size = 3)
         self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
-        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped, restarting..."))
-        self.scanner.signals.finished.connect(self.start_scanner)
+        self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped on critical error, restart required."))
         self.scanner.signals.result.connect(self.handle_scan_results)
         self.console.append_output("Scanner started")
         self.threadpool.start(self.scanner)

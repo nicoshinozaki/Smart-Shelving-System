@@ -27,21 +27,22 @@ class ScannerDriver(WorkerThread):
             self.state[i] = {}
         self.scan_time = scan_time
         self.window_size = window_size
-        self.stop_flag = False
+        self.pause_flag = False
         
         super().__init__(self._run)
 
-    def stop(self):
-        self.stop_flag = True
+    def pause(self):
+        self.pause_flag = True
         
     def start(self):
-        self.stop_flag = False
+        self.pause_flag = False
 
     def _run(self):
         while not self.stop_flag:
-            self._scan()
-            time.sleep(1)
-        return f"{str(self)} stopped"
+            if self.pause_flag:
+                time.sleep(0.2)
+            else:
+                self._scan()
 
     def _scan(self):
         self._clear_state()
@@ -61,7 +62,7 @@ class ScannerDriver(WorkerThread):
         # that  1) finds the diff
         #       2) asks the user if this is accurate
         #       3) updates the GUI
-        self.signals.result.emit(deepcopy(self.state))
+        if not self.stop_flag: self.signals.result.emit(deepcopy(self.state))
         self.application.update_status("Ready")
 
     def _update_state(self, scan_count, data):
@@ -93,7 +94,7 @@ class ScannerDriver(WorkerThread):
         data = b''
         start_time = time.time()
         with serial.Serial(device, baudrate=115200, timeout=1) as ser:
-            while time.time() - start_time < self.scan_time:
+            while time.time() - start_time < self.scan_time and not self.stop_flag:
                 data += ser.read_all()
 
         return data.decode('utf-8', errors='replace')

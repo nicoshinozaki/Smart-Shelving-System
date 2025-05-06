@@ -1,8 +1,10 @@
 #!/bin/bash
 
 cd management
-pyenv local 3.9.10
-python3 -m venv .venv_py_3.9.10
+~/.pyenv/versions/3.9.10/bin/python -m venv .venv_py_3.9.10
+echo "running pyenv"
+
+nmcli connection up zebra-eth
 
 # Activate virtual environment
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
@@ -29,14 +31,16 @@ if [ ! -f requirements.txt ]; then
 fi
 
 echo "Installing required packages..."
-pip install --upgrade pip setuptools wheel
+# pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt > /dev/null
 
+echo "Setting up ethernet port IP address..."
+nmcli connection up zebra-eth
 
 # Setting environmental variable for API credential file
 export CREDENTIALS_PATH=../secret/smart-shelving-27ec95c7dcb2.json
 echo "Starting management_main.py..."
-python management_main.py &
+python management_main.py
 
 # Deactivate the virtual environment
 deactivate
