@@ -241,9 +241,18 @@
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionAuto_save"/>
+    <addaction name="actionWarn_inventory_change"/>
+    <addaction name="actionSave_on_exit"/>
+   </widget>
    <addaction name="menuSmart_Shelving_System"/>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAbout">
@@ -359,6 +368,44 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionAuto_save">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto save</string>
+   </property>
+  </action>
+  <action name="actionWarn_inventory_change">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warn inventory change</string>
+   </property>
+  </action>
+  <action name="actionSave_on_exit">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Save on exit</string>
    </property>
   </action>
  </widget>

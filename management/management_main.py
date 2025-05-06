@@ -61,19 +61,28 @@ class GoogleSheetTableApp(QMainWindow):
         push_sheets():
             Pushes the current changes to the Google Sheets spreadsheet.
     """
-    def __init__(self, spreadsheet_id, sheet_name):
+    def __init__(self, spreadsheet_id:str, sheet_name:str, settings:dict = {}):
         self.start_time = time.time()
         super().__init__()
         uic.loadUi('src/Smart_Shelving_System.ui', self)
         self.spreadsheet_id = spreadsheet_id
         self.sheet_name = sheet_name
-
+        self.settings = settings
 
         # Initialize the console
         # Access the console widgets
         self.ConsoleDisplay = self.findChild(QPlainTextEdit, 'ConsoleDisplay')
         self.ConsoleInput = self.findChild(QLineEdit, 'ConsoleInput')
         self.console = Console(self, self.ConsoleDisplay, self.ConsoleInput)
+
+        # print settings
+        if settings:
+            for key, value in settings.items():
+                logger.info(f"{key}: {value}")
+                self.console.append_output(f"{key}: {value}")
+        else:
+            logger.info("No settings provided, using default settings")
+            self.console.append_output("No settings provided, using default settings")
 
         # Initialize a thread pool for background tasks
         self.threadpool = QtCore.QThreadPool()
@@ -100,6 +109,14 @@ class GoogleSheetTableApp(QMainWindow):
         self.save_button = self.findChild(QPushButton, 'saveButton')
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
         self.statusbar = self.findChild(QStatusBar, 'statusbar')
+
+        # initialize settings menu
+        self.actionAuto_save.setChecked(settings.get('auto_save', True))
+        self.actionWarn_inventory_change.setChecked(settings.get('warn_inventory_change', True))
+        self.actionSave_on_exit.setChecked(settings.get('save_on_exit', True))
+        self.actionSave_on_exit.toggled.connect(self.toggle_save_on_exit)
+        self.actionAuto_save.toggled.connect(self.toggle_auto_save)
+        self.actionWarn_inventory_change.toggled.connect(self.toggle_warn_inventory_change)
 
         # Save color values for later use
         self.colors = {
@@ -159,6 +176,36 @@ class GoogleSheetTableApp(QMainWindow):
         
         return values
     
+    def toggle_auto_save(self):
+        if self.settings.get('auto_save', True):
+            self.settings['auto_save'] = False
+            self.actionAuto_save.setChecked(False)
+            self.console.append_output("Auto save disabled")
+        else:
+            self.settings['auto_save'] = True
+            self.actionAuto_save.setChecked(True)
+            self.console.append_output("Auto save enabled")
+
+    def toggle_warn_inventory_change(self):
+        if self.settings.get('warn_inventory_change', True):
+            self.settings['warn_inventory_change'] = False
+            self.actionWarn_inventory_change.setChecked(False)
+            self.console.append_output("Warning for inventory change disabled")
+        else:
+            self.settings['warn_inventory_change'] = True
+            self.actionWarn_inventory_change.setChecked(True)
+            self.console.append_output("Warning for inventory change enabled")
+
+    def toggle_save_on_exit(self):
+        if self.settings.get('save_on_exit', True):
+            self.settings['save_on_exit'] = False
+            self.actionSave_on_exit.setChecked(False)
+            self.console.append_output("Save on exit disabled")
+        else:
+            self.settings['save_on_exit'] = True
+            self.actionSave_on_exit.setChecked(True)
+            self.console.append_output("Save on exit enabled")
+    
     def zebra_serial_config(self):
         retried = 0
         while True:
@@ -199,13 +246,14 @@ class GoogleSheetTableApp(QMainWindow):
         if response == QMessageBox.StandardButton.Ok:
             self.scanner.signals.finished.disconnect()
             self.scanner.stop()
+            if self.settings.get('save_on_exit', True):
+                self.console.append_output("Saving changes on exit")
+                self.save()
             self.console.append_output("Stopping all console jobs...")
             all_stopped = self.console.stop()
             if not all_stopped:
                 logger.error("Failed to stop all console jobs")
                 self.console.append_output("Failed to stop all console jobs")
-            self.console.append_output("Stopping all application jobs...")
-            all_stopped = self.threadpool.waitForDone(1000)
             if not all_stopped:
                 logger.error("Failed to stop all threads")
                 self.console.append_output("Failed to stop all threads")
@@ -214,6 +262,10 @@ class GoogleSheetTableApp(QMainWindow):
                 f.write(console_text + '\n')
                 f.write("The application was closed at ")
                 f.write(time.ctime() + '\n')
+            with open("settings.json", "w") as f:
+                json.dump(self.settings, f, indent=4)
+            self.console.append_output("Stopping all application jobs...")
+            all_stopped = self.threadpool.waitForDone(10000)
             event.accept()
         else:
             event.ignore()
@@ -399,25 +451,29 @@ class GoogleSheetTableApp(QMainWindow):
 
         if not changed: return
         self.scanner.pause()
-        response = QMessageBox.critical(
-            self,
-            "Inventory Changed",
-            f"Inventory changed for drawers {changed}, Record changes?",
-            QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
-        )
+        if self.settings.get('warn_inventory_change', True):
+            response = QMessageBox.critical(
+                self,
+                "Inventory Changed",
+                f"Inventory changed for drawers {changed}, Record changes?",
+                QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
+            )
 
-        if response == QMessageBox.StandardButton.Cancel:
-            self.console.append_output("Changes not recorded")
-            self.scanner.start()
-            return
+            if response == QMessageBox.StandardButton.Cancel:
+                self.console.append_output("Changes not recorded")
+                self.scanner.start()
+                return
 
         self.last_scan_results = results
         with open("tags.json", "w") as f:
-            json.dump(self.last_scan_results, f)
+            json.dump(self.last_scan_results, f, indent=4)
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
             self.record_change(antenna_num, 1, len(results[antenna_num]))
+        if self.settings.get('auto_save', True):
+            self.console.append_output("Auto saving changes")
+            self.save()
         self.scanner.start()
 
     def start_scanner(self):
@@ -487,11 +543,16 @@ if __name__ == '__main__':
     
     app = QApplication(sys.argv)
 
+    try:
+        with open("settings.json", "r") as f:
+            settings = json.load(f)
+    except FileNotFoundError:
+        settings = {}
     spreadsheet_id = '1fxyyb80V8hgieRpf1MKA9erwP-kD0SLwm6hdXIoRQ4M'
     sheet_name = 'Sheet1'
 
     # Create the main window
-    window = GoogleSheetTableApp(spreadsheet_id, sheet_name)
+    window = GoogleSheetTableApp(spreadsheet_id, sheet_name, settings)
     window.show()
 
     sys.exit(app.exec())
