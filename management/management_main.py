@@ -113,12 +113,21 @@ class GoogleSheetTableApp(QMainWindow):
         self.statusbar = self.findChild(QStatusBar, 'statusbar')
 
         # Save color values for later use
-        self.colors = {
-        #    'base': QBrush(QColor(76, 0, 153)),
-        #    'alternateBase':QBrush(QColor(204, 0, 204)),
-            'brightText': self.table_widget.palette().brightText(),
-            'text': self.table_widget.palette().text()
-        }
+        current_os = platform.system()
+        if (current_os == "Darwin"):
+            self.colors = {
+                'base': self.table_widget.palette().base(),
+                'alternateBase': self.table_widget.palette().alternateBase(),
+                'brightText': self.table_widget.palette().brightText(),
+                'text': self.table_widget.palette().text()
+            }
+        elif (current_os == "Linux"):
+             self.colors = {
+                'base': self.table_widget.palette().base(),
+                'alternateBase': QBrush(QColor(192, 192, 192)),
+                'brightText': self.table_widget.palette().brightText(),
+                'text': self.table_widget.palette().text()
+            }
 
         # Load table data from Google Sheets
         try:
@@ -248,17 +257,6 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.table_widget.setStyleSheet("""
-        QTableWidget {
-            background-color: #7F00FF; /* Dark purple */
-            alternate-background-color: #B266FF; /* Lighter purple */
-        }
-        
-        QTableWidget::item:selected {
-            background-color: #E566FF; /* light purple */
-            color: black;
-        }
-        """)
         for row in range(len(data)-1):
             brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
             for col in range(len(data[0])-1):
