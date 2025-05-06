@@ -325,7 +325,7 @@ class GoogleSheetTableApp(QMainWindow):
                     self.table_initial_state[row_index - 1][col_index - 1] = cell_data
                     self.table_current_state[row_index - 1][col_index - 1] = cell_data
 
-    def record_change(self, row, column, value = None):
+    def record_change(self, row, column, value = None, nosave = False):
         previous_value = self.table_current_state[row][column]
         new_value = (self.table_widget.item(row, column).text() if value is None else str(value))
 
@@ -342,6 +342,8 @@ class GoogleSheetTableApp(QMainWindow):
         self.undo_stack.append((row, column, previous_value))
         self.table_current_state[row, column] = new_value
         self.table_widget.cellChanged.connect(self.record_change)
+        if nosave:
+            return
         if self.settings.get('auto_save', True):
             self.save()
 
@@ -482,7 +484,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.console.append_output("Scan results:")
         for antenna_num in results:
             self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
-            self.record_change(antenna_num, 1, len(results[antenna_num]))
+            self.record_change(antenna_num, 1, len(results[antenna_num]), nosave=True)
         if self.settings.get('auto_save', True):
             self.console.append_output("Auto saving changes")
             self.save()
