@@ -332,6 +332,8 @@ class GoogleSheetTableApp(QMainWindow):
         self.undo_stack.append((row, column, previous_value))
         self.table_current_state[row, column] = new_value
         self.table_widget.cellChanged.connect(self.record_change)
+        if self.settings.get('auto_save', True):
+            self.save()
 
     def undo(self):
         if not self.undo_stack:
