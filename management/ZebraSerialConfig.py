@@ -1,6 +1,7 @@
 import serial
 import time
-import platform, configparser
+import platform
+import configparser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -93,8 +94,6 @@ class ZebraSerialConfig:
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read('zebra.conf')
-    
-    current_os = platform.system()
     
     chromedriver_path = subprocess.check_output(["which", "chromedriver"]).decode().strip()
     url = config['url']
