@@ -73,7 +73,19 @@ class GoogleSheetTableApp(QMainWindow):
         # Initialize the console
         # Access the console widgets
         self.ConsoleDisplay = self.findChild(QPlainTextEdit, 'ConsoleDisplay')
+        self.ConsoleDisplay.setStyleSheet("""
+        QPlainTextEdit {
+            background-color: #5B00A6; /* Dark Purple */
+            color: white;
+        }
+        """)
         self.ConsoleInput = self.findChild(QLineEdit, 'ConsoleInput')
+        self.ConsoleInput.setStyleSheet("""
+        QLineEdit {
+            background-color: #5B00A6;
+            color: white;
+        }
+        """)
         self.console = Console(self, self.ConsoleDisplay, self.ConsoleInput)
 
         # print settings
@@ -108,7 +120,19 @@ class GoogleSheetTableApp(QMainWindow):
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
         self.save_button = self.findChild(QPushButton, 'saveButton')
+        self.save_button.setStyleSheet("""
+        QPushButton {
+            background-color: #5B00A6; /* Dark Purple */
+            color: white;
+        }
+        """)
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
+        self.reload_button.setStyleSheet("""
+        QPushButton {
+            background-color: #5B00A6; /* Dark Purple */
+            color: white;
+        }
+        """)
         self.statusbar = self.findChild(QStatusBar, 'statusbar')
 
         # initialize settings menu
@@ -125,14 +149,14 @@ class GoogleSheetTableApp(QMainWindow):
             self.colors = {
                 'base': self.table_widget.palette().base(),
                 'alternateBase': self.table_widget.palette().alternateBase(),
-                'brightText': self.table_widget.palette().brightText(),
+                'brightText': QBrush(QColor(255, 0, 0)), # red
                 'text': self.table_widget.palette().text()
             }
         elif (current_os == "Linux"):
              self.colors = {
                 'base': self.table_widget.palette().base(),
-                'alternateBase': QBrush(QColor(192, 192, 192)),
-                'brightText': self.table_widget.palette().brightText(),
+                'alternateBase': QBrush(QColor(192, 192, 192)), # grey
+                'brightText': QBrush(QColor(255, 0, 0)), # red
                 'text': self.table_widget.palette().text()
             }
 
@@ -299,19 +323,44 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table_widget.setAlternatingRowColors(True)
+        self.table_widget.setStyleSheet("""
+        QTableWidget {
+            background-color: #9591FF; /* Light blue */
+            alternate-background-color: #C891FF; /* Lighter purple */
+            color: black;
+        }
+        
+        QTableWidget::item:selected {
+            background-color: #FFFEA6; /* Light Yellow */
+            /*color: black;*/
+        }
+        
+        QHeaderView::section:horizontal {
+            background-color: #0800FF /* Blue */
+        }
+        
+        QHeaderView::section:vertical {
+            background-color: #8000FF /* Purple */
+        }
+        
+        QTableCornerButton::section {
+            background-color: #0800FF /* Blue */
+        }
+        """)
         for row in range(len(data)-1):
-            brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
+            #brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
             for col in range(len(data[0])-1):
                 self.table_widget.setItem(row, col, QTableWidgetItem())
                 self.table_widget.item(row, col).setTextAlignment(
                     QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-                self.table_widget.item(row, col).setBackground(brush)
+                #self.table_widget.item(row, col).setBackground(brush)
                 
         for row_index, row_data in enumerate(data):
-            if (row_index-1) % 2:
-                brush = self.colors['base']
-            else:
-                brush = self.colors['alternateBase']
+            #if (row_index-1) % 2:
+            #    brush = self.colors['base']
+            #else:
+            #    brush = self.colors['alternateBase']
             for col_index, cell_data in enumerate(row_data):
                 if row_index == 0:
                     if col_index == 0:
@@ -319,7 +368,7 @@ class GoogleSheetTableApp(QMainWindow):
                     self.table_widget.setHorizontalHeaderItem(col_index - 1, QTableWidgetItem(cell_data))
                 elif col_index == 0:
                     self.table_widget.setVerticalHeaderItem(row_index - 1, QTableWidgetItem(cell_data))
-                    self.table_widget.verticalHeaderItem(row_index - 1).setBackground(brush)
+                    #self.table_widget.verticalHeaderItem(row_index - 1).setBackground(brush)
                 else:
                     self.table_widget.item(row_index - 1, col_index - 1).setText(cell_data)
                     self.table_initial_state[row_index - 1][col_index - 1] = cell_data
@@ -556,6 +605,13 @@ if __name__ == '__main__':
                         level=logging.INFO)
     
     app = QApplication(sys.argv)
+    app.setStyleSheet("""
+    QWidget {
+        background-color: #060070;
+        color: white;
+        font-family: 'Arial';
+    }
+    """)
 
     try:
         with open("settings.json", "r") as f:
@@ -567,6 +623,6 @@ if __name__ == '__main__':
 
     # Create the main window
     window = GoogleSheetTableApp(spreadsheet_id, sheet_name, settings)
-    window.show()
+    window.showMaximized()
 
     sys.exit(app.exec())
