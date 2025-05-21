@@ -1,7 +1,8 @@
 import sys, os, logging, time, platform
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit,QWidget
 from PyQt6 import uic, QtGui, QtCore
 from PyQt6.QtGui import QColor, QBrush
+from PyQt6.QtCore import QEvent
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from serial.tools.list_ports import comports
@@ -11,7 +12,7 @@ from Console import Console
 from ScannerDriver import ScannerDriver
 from ZebraSerialConfig import ZebraSerialConfig
 import json
-
+import subprocess
 logger = logging.getLogger(__name__)
 
 class GoogleSheetTableApp(QMainWindow):
@@ -595,6 +596,7 @@ class GoogleSheetTableApp(QMainWindow):
         logger.info("Pushed changes to Google Sheets")
         logger.info(deltas)
         logger.info(self.table_current_state)
+  
 
 if __name__ == '__main__':
     import logging
