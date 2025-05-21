@@ -1,8 +1,8 @@
 import sys, os, logging, time, platform
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit,QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit, QWidget, QScroller, QScrollerProperties
 from PyQt6 import uic, QtGui, QtCore
 from PyQt6.QtGui import QColor, QBrush
-from PyQt6.QtCore import QEvent
+from PyQt6.QtCore import QEvent, Qt
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from serial.tools.list_ports import comports
@@ -74,6 +74,15 @@ class GoogleSheetTableApp(QMainWindow):
         # Initialize the console
         # Access the console widgets
         self.ConsoleDisplay = self.findChild(QPlainTextEdit, 'ConsoleDisplay')
+        self.ConsoleDisplay.setReadOnly(True)
+        self.ConsoleDisplay.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
+        gesture_type = getattr(QScroller, 'ScrollerGestureType')
+        QScroller.grabGesture(self.ConsoleDisplay.viewport(), gesture_type.LeftMouseButtonGesture)
+        scroller = QScroller.scroller(self.ConsoleDisplay.viewport())
+        props = scroller.scrollerProperties()
+        props.setScrollMetric(QScrollerProperties.ScrollMetric.DecelerationFactor, 1)
+        props.setScrollMetric(QScrollerProperties.ScrollMetric.MaximumVelocity, 0.1)
+        scroller.setScrollerProperties(props)
         self.ConsoleDisplay.setStyleSheet("""
         QPlainTextEdit {
             background-color: #5B00A6; /* Dark Purple */
