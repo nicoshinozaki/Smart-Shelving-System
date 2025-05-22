@@ -8,6 +8,49 @@ import re
 
 FORMAT = r'^[^,]+,[12345678]+,<[0-9a-fA-F]{4}>$' # re for parsing
 
+class ViterbiTagTracker:
+    def __init__(self, A=None, B=None, V_prev=None):
+        # State indices: 0 = Present, 1 = Absent
+        # Transition matrix A[i][j] = P(state_j | state_i)
+        if A is None:
+            self.A = np.array([
+                [0.95, 0.05],  # from Present
+                [0.05, 0.95]   # from Absent
+            ])
+        else:
+            self.A = A
+
+        # Observation matrix B[j][o] = P(observation o | state j)
+        # o: 0 = False (NotDetected), 1 = True (Detected)
+        if B is None:
+            self.B = np.array([
+                [0.1, 0.9],  # Present
+                [0.8, 0.2]   # Absent
+            ])
+        else:
+            self.B = B
+
+        # Initial state probabilities
+        if V_prev is None:
+            self.V_prev = np.array([0.5, 0.5])  # [Present, Absent] fifty-fifty
+        else:
+            self.V_prev = V_prev
+
+    def update(self, detection: bool) -> str:
+        """
+        detection: bool (True=Detected, False=NotDetected)
+        returns: "Present" or "Absent" (most probable state)
+        """
+        obs_index = int(detection)  # 1 if True, 0 if False
+
+        # Compute max over previous states for each current state
+        V_curr = np.max(self.V_prev[:, None] * self.A * self.B[:, obs_index], axis=0)
+
+        # Update for next time step
+        self.V_prev = V_curr
+
+        return True if np.argmax(V_curr) == 0 else False
+
 class ScannerDriver(WorkerThread):
     def __init__(self, application, device = None, antenna_count = 4,
                  scan_time = 3, window_size = 3):
