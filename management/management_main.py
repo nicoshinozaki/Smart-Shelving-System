@@ -17,51 +17,33 @@ logger = logging.getLogger(__name__)
 
 class GoogleSheetTableApp(QMainWindow):
     """
-    A PyQt application for managing a Google Sheets table.
-    Attributes:
-        spreadsheet_id (str): The ID of the Google Sheets spreadsheet.
-        sheet_name (str): The name of the sheet within the spreadsheet.
-        start_time (float): The start time of the application.
-        ConsoleDisplay (QPlainTextEdit): The console display widget.
-        ConsoleInput (QLineEdit): The console input widget.
-        console (Console): The console object for handling console operations.
-        threadpool (QThreadPool): The thread pool for managing background tasks.
-        undo_stack (list): Stack to track undo operations.
-        redo_stack (list): Stack to track redo operations.
-        table_widget (QTableWidget): The table widget displaying the Google Sheets data.
-        save_button (QPushButton): The button to save changes.
-        reload_button (QPushButton): The button to reload the table.
-        statusbar (QStatusBar): The status bar for displaying messages.
-        colors (dict): Dictionary of color values for table cell formatting.
-        table_initial_state (np.ndarray): Initial state of the table data.
-        table_current_state (np.ndarray): Current state of the table data.
-    Methods:
-        fetch_sheets(spreadsheet_id, sheet_name):
-            Fetches data from the specified Google Sheets spreadsheet and sheet.
-        update_status(message):
-            Updates the status bar with the given message.
-        closeEvent(event):
-            Handles the close event of the application, prompting the user for confirmation.
-        peripheral_handler(*args, **kwargs):
-            Handles peripheral messages and displays them in a message box.
-        load_table(data):
-            Loads the given data into the table widget.
-        record_change(row, column):
-            Records changes made to the table cells and updates the undo/redo stacks.
-        undo():
-            Undoes the last change made to the table.
-        redo():
-            Redoes the last undone change to the table.
-        save():
-            Saves the current changes to the Google Sheets spreadsheet.
-        reload_table():
-            Reloads the table data from the Google Sheets spreadsheet.
-        handle_scan_results(results):
-            Handles the results of a scan and displays them in the console.
-        start_scanner():
-            Starts the scanner for peripheral devices.
-        push_sheets():
-            Pushes the current changes to the Google Sheets spreadsheet.
+    A QMainWindow-based application that manages a Google Sheets-backed table with a rich user interface.
+    This application loads table data from a specified Google Sheet and provides features such as:
+        - Displaying and editing table data in a QTableWidget.
+        - Automatic and manual saving of changes back to Google Sheets.
+        - Undo/redo functionality for cell edits.
+        - UI elements including a console for output, buttons for saving and reloading, and status messages.
+        - Background processing via QThreadPool for long-running tasks (e.g., fetching data and configuring connected devices).
+        - Peripheral device configuration (e.g., Zebra RFID reader) and scanning capabilities.
+        - Maintaining application settings such as auto_save, warn_inventory_change, and save_on_exit to control behavior.
+    Parameters:
+        spreadsheet_id (str): The ID of the Google Sheet to interact with.
+        sheet_name (str): The name of the sheet within the Google Sheet document containing table data.
+        settings (dict, optional): A dictionary to override default settings. Possible keys include:
+            - 'auto_save': (bool) whether changes are automatically saved.
+            - 'warn_inventory_change': (bool) whether to warn when inventory changes are detected.
+            - 'save_on_exit': (bool) whether to save changes automatically upon application exit.
+    The class also handles:
+        - Initialization of UI components (widgets from the .ui file).
+        - Loading of initial configurations including previous scan results if available.
+        - Synchronization of table state with Google Sheets through methods like fetch_sheets, load_table, and push_sheets.
+        - Undo/redo mechanisms through the maintenance of an undo_stack and redo_stack.
+        - Background tasks using worker threads to keep the UI responsive during long operations.
+        - Peripheral (scanner) management with a dedicated thread and real-time status updates.
+        - Cleanup and saving of application state on close via a custom closeEvent.
+    Usage:
+        Instantiate the class with the appropriate spreadsheet_id, sheet_name, and optional settings dictionary. The application will configure the UI,
+        fetch initial data from Google Sheets, and start background services such as device configuration and scanning once launched.
     """
     def __init__(self, spreadsheet_id:str, sheet_name:str, settings:dict = {}):
         self.start_time = time.time()
@@ -329,35 +311,14 @@ class GoogleSheetTableApp(QMainWindow):
 
         # Set font and resize modes
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setPointSize(20)
         self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.setAlternatingRowColors(True)
-        self.table_widget.setStyleSheet("""
-        QTableWidget {
-            background-color: #9591FF; /* Light blue */
-            alternate-background-color: #C891FF; /* Lighter purple */
-            color: black;
-        }
-        
-        QTableWidget::item:selected {
-            background-color: #FFFEA6; /* Light Yellow */
-            /*color: black;*/
-        }
-        
-        QHeaderView::section:horizontal {
-            background-color: #0800FF /* Blue */
-        }
-        
-        QHeaderView::section:vertical {
-            background-color: #8000FF /* Purple */
-        }
-        
-        QTableCornerButton::section {
-            background-color: #0800FF /* Blue */
-        }
-        """)
+        with open("./src/main_table_style.qss", "r") as file:
+            style = file.read()
+        self.table_widget.setStyleSheet(style)
         for row in range(len(data)-1):
             #brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
             for col in range(len(data[0])-1):

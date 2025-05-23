@@ -10,6 +10,11 @@
     <height>722</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>20</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Inventory Management</string>
   </property>
@@ -40,7 +45,7 @@
           <property name="font">
            <font>
             <family>Helvetica</family>
-            <pointsize>24</pointsize>
+            <pointsize>36</pointsize>
            </font>
           </property>
           <property name="text">
@@ -139,6 +144,14 @@
             </disabled>
            </palette>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -190,6 +203,7 @@
         <property name="font">
          <font>
           <family>Courier New</family>
+          <pointsize>20</pointsize>
          </font>
         </property>
         <property name="readOnly">
@@ -198,7 +212,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="ConsoleInput"/>
+       <widget class="QLineEdit" name="ConsoleInput">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -245,9 +265,19 @@
     <property name="title">
      <string>Settings</string>
     </property>
+    <widget class="QMenu" name="menuData_filtering">
+     <property name="title">
+      <string>Tags filtering</string>
+     </property>
+     <addaction name="actionNone"/>
+     <addaction name="actionLPF_window"/>
+     <addaction name="actionHMM_Viterbi"/>
+    </widget>
     <addaction name="actionAuto_save"/>
     <addaction name="actionWarn_inventory_change"/>
     <addaction name="actionSave_on_exit"/>
+    <addaction name="separator"/>
+    <addaction name="menuData_filtering"/>
    </widget>
    <addaction name="menuSmart_Shelving_System"/>
    <addaction name="menuFile"/>
@@ -406,6 +436,21 @@
    </property>
    <property name="text">
     <string>Save on exit</string>
+   </property>
+  </action>
+  <action name="actionNone">
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
+  <action name="actionLPF_window">
+   <property name="text">
+    <string>LPF window</string>
+   </property>
+  </action>
+  <action name="actionHMM_Viterbi">
+   <property name="text">
+    <string>HMM Viterbi</string>
    </property>
   </action>
  </widget>

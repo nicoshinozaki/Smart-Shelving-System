@@ -1,0 +1,25 @@
+QTableWidget {
+    background-color: #9591FF; /* Light blue */
+    alternate-background-color: #C891FF; /* Lighter purple */
+    color: black;
+}
+
+QTableWidget::item:selected {
+    font-size: 24px;
+    background-color: #FFFEA6; /* Light Yellow */
+    color: black;         
+}
+
+QHeaderView::section:horizontal {
+    font-size: 20px;
+    background-color: #0800FF /* Blue */
+}
+
+QHeaderView::section:vertical {
+    font-size: 20px;
+    background-color: #8000FF /* Purple */
+}
+
+QTableCornerButton::section {
+    background-color: #0800FF /* Blue */
+}
