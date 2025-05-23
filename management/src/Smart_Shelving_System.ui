@@ -292,6 +292,11 @@
    <property name="text">
     <string>About</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionHelp">
    <property name="icon">
@@ -299,6 +304,11 @@
    </property>
    <property name="text">
     <string>Help</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionExit">
@@ -308,6 +318,11 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionNew">
    <property name="icon">
@@ -315,6 +330,11 @@
    </property>
    <property name="text">
     <string>New</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -327,6 +347,11 @@
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
@@ -338,6 +363,11 @@
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
@@ -348,6 +378,11 @@
    </property>
    <property name="text">
     <string>Undo</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -363,6 +398,11 @@
    <property name="text">
     <string>Redo</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
    </property>
@@ -373,6 +413,11 @@
    </property>
    <property name="text">
     <string>Cut</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -385,6 +430,11 @@
    <property name="text">
     <string>Copy</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
    </property>
@@ -395,6 +445,11 @@
    </property>
    <property name="text">
     <string>Paste</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -415,6 +470,11 @@
    <property name="text">
     <string>Auto save</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionWarn_inventory_change">
    <property name="checkable">
@@ -425,6 +485,11 @@
    </property>
    <property name="text">
     <string>Warn inventory change</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionSave_on_exit">
@@ -437,20 +502,40 @@
    <property name="text">
     <string>Save on exit</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionNone">
    <property name="text">
     <string>None</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionLPF_window">
    <property name="text">
     <string>LPF window</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionHMM_Viterbi">
    <property name="text">
     <string>HMM Viterbi</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </action>
  </widget>
