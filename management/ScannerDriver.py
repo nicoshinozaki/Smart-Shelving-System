@@ -68,7 +68,7 @@ class TagTracker(object):
 
         if method_state.filter_method == FilterMethod.NoFiltering:
             # No filtering, just update the state
-            self.state = detection[-1].astype(bool)
+            self.state = self.detections[-1].astype(bool)
 
         elif method_state.filter_method == FilterMethod.WindowLPF:
             self.state = np.mean(self.detections) > 0.5
