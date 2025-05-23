@@ -87,16 +87,6 @@ class GoogleSheetTableApp(QMainWindow):
         self.undo_stack = []
         self.redo_stack = []
 
-        # Set drawer tag table list
-        self.last_scan_results = None
-        if os.path.exists("tags.json"):
-            self.console.append_output("Loading last scan results from tags.json")
-            with open("tags.json", "r") as f:
-                self.last_scan_results = json.load(f)
-            keys = list(self.last_scan_results.keys())
-            for key in keys:
-                self.last_scan_results[int(key)] = self.last_scan_results.pop(key) 
-
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
         self.save_button = self.findChild(QPushButton, 'saveButton')
@@ -440,8 +430,7 @@ class GoogleSheetTableApp(QMainWindow):
             return
         
     def handle_scan_results(self, results:dict):
-        
-        self.scanner.pause()
+        # Scanner is paused when results are received
         if self.settings.get('warn_inventory_change', True):
             response = QMessageBox.critical(
                 self,
@@ -455,16 +444,14 @@ class GoogleSheetTableApp(QMainWindow):
                 self.scanner.start()
                 return
 
-        self.last_scan_results = results
-        with open("tags.json", "w") as f:
-            json.dump(self.last_scan_results, f, indent=4)
-        self.console.append_output("Scan results:")
+        self.console.append_output("Changed drawers:")
         for antenna_num in results:
-            self.console.append_output(f"\tAntenna {antenna_num}:{len(results[antenna_num])}\ttags")
-            self.record_change(antenna_num, 1, len(results[antenna_num]), nosave=True)
+            self.console.append_output(f"\tAntenna {antenna_num}:{results[antenna_num]}\ttags")
+            self.record_change(antenna_num, 1, results[antenna_num], nosave=True)
         if self.settings.get('auto_save', True):
             self.console.append_output("Auto saving changes")
             self.save()
+        # Restart the scanner
         self.scanner.start()
 
     def start_scanner(self):
@@ -472,12 +459,12 @@ class GoogleSheetTableApp(QMainWindow):
         if (current_os == "Darwin"):
             self.scanner = ScannerDriver(self, device = '/dev/tty.usbserial-A9Z2MKOX',
                                         antenna_count = 4,
-                                        scan_time = 3,
+                                        scan_time = 2,
                                         window_size = 3)
         elif (current_os == "Linux"):
             self.scanner = ScannerDriver(self, device = '/dev/ttyUSB0',
                                         antenna_count = 4,
-                                        scan_time = 3,
+                                        scan_time = 2,
                                         window_size = 3)
         self.scanner.signals.error.connect(lambda e: self.console.append_output(str(e)))
         self.scanner.signals.finished.connect(lambda: self.console.append_output("Scanner stopped on critical error, restart required."))

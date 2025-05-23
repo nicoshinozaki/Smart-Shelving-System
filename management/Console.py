@@ -283,27 +283,21 @@ class ConsoleCommandHandler(WorkerThread):
         Queries the tag IDs for a drawer number.
         If no drawer number is provided, queries all drawers.
         """
-        results = kwargs['application'].last_scan_results
-        if results is None:
-            return "No scan results available"
+        info = ""
         if len(args) < 1:
-            for drawer, tags in results.items():
-                tags = [str(tag) for tag in tags]
-                if len(tags) == 0:
-                    self.signals.result.emit(f"Drawer {drawer}:\t" + "No tags found")
-                else:
-                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+            for drawer, trackers in self.kwargs['application'].scanner.trackers.items():
+                info += f"Drawer {drawer}:\n"
+                for id, tracker in trackers.items():
+                    info += f"{id}:\t{tracker}\n"
+
         else:
             try:
                 drawer = int(args[0])
-                if drawer not in results:
+                if drawer < 0 or drawer >= len(self.kwargs['application'].scanner.trackers):
                     return f"Invalid drawer number: {drawer}"
-                tags = results[drawer]
-                tags = [str(tag) for tag in tags]
-                if len(tags) == 0:
-                    return f"No tags found for drawer {drawer}"
-                else:
-                    self.signals.result.emit(f"Drawer {drawer}:\n\t" + "\n\t".join(tags))
+                info += f"Drawer {drawer}:\n"
+                for id, tracker in self.kwargs['application'].scanner.trackers[drawer].items():
+                    info += f"{id}:\t{tracker}\n"
             except ValueError:
                 return f"Invalid drawer number: {args[0]}"
             

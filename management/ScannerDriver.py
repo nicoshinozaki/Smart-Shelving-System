@@ -7,7 +7,8 @@ from copy import deepcopy
 import re
 from enum import Enum
 from dataclasses import dataclass
-import threading
+import os
+import json
 
 FORMAT = r'^[^,]+,[12345678]+,<[0-9a-fA-F]{4}>$' # re for parsing
 
@@ -59,6 +60,9 @@ class TagTracker(object):
             ]),
             "V_prev": np.array([0.05, 0.95])  # [Present, Absent]
         }
+
+    def __str__(self):
+        return f"TagTracker(state={self.state}, detections={self.detections})"
 
     def update(self, detection: bool):
         global method_state
@@ -156,7 +160,9 @@ class ScannerDriver(WorkerThread):
             if state != previous:
                 changed_antennas.add(antenna_num)
         # emit only changed antennas
-        if changed_antennas: self.signals.result.emit({i: self.tag_counts[i] for i in changed_antennas})          
+        if changed_antennas:
+            self.signals.result.emit({i: self.tag_counts[i] for i in changed_antennas})
+            self.pause()       
 
     @staticmethod
     def _parse_buffer(buffer):
