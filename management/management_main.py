@@ -65,20 +65,7 @@ class GoogleSheetTableApp(QMainWindow):
         props.setScrollMetric(QScrollerProperties.ScrollMetric.DecelerationFactor, 1)
         props.setScrollMetric(QScrollerProperties.ScrollMetric.MaximumVelocity, 0.1)
         scroller.setScrollerProperties(props)
-        self.ConsoleDisplay.setStyleSheet("""
-        QPlainTextEdit {
-            font-size: 16px;
-            background-color: #5B00A6; /* Dark Purple */
-            color: white;
-        }
-        """)
         self.ConsoleInput = self.findChild(QLineEdit, 'ConsoleInput')
-        self.ConsoleInput.setStyleSheet("""
-        QLineEdit {
-            background-color: #5B00A6;
-            color: white;
-        }
-        """)
         self.console = Console(self, self.ConsoleDisplay, self.ConsoleInput)
 
         # print settings
@@ -113,21 +100,7 @@ class GoogleSheetTableApp(QMainWindow):
         # Access the QTableWidget, QPushButtons, QStatusBar, and console widgets from the .ui file by their object names
         self.table_widget = self.findChild(QTableWidget, 'tableWidget')
         self.save_button = self.findChild(QPushButton, 'saveButton')
-        self.save_button.setStyleSheet("""
-        QPushButton {
-            font-size: 20px;
-            background-color: #5B00A6; /* Dark Purple */
-            color: white;
-        }
-        """)
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
-        self.reload_button.setStyleSheet("""
-        QPushButton {
-            font-size: 20px;
-            background-color: #5B00A6; /* Dark Purple */
-            color: white;
-        }
-        """)
         self.statusbar = self.findChild(QStatusBar, 'statusbar')
 
         # initialize settings menu
@@ -313,16 +286,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_initial_state = np.ndarray((len(data)-1, len(data[0])-1,), dtype=object)
         self.table_current_state = self.table_initial_state.copy()
 
-        # Set font and resize modes
-        font = QtGui.QFont()
-        font.setPointSize(20)
-        self.table_widget.setFont(font)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_widget.setAlternatingRowColors(True)
-        with open("./src/main_table_style.qss", "r") as file:
-            style = file.read()
-        self.table_widget.setStyleSheet(style)
         for row in range(len(data)-1):
             #brush = self.colors['base'] if row % 2 else self.colors['alternateBase']
             for col in range(len(data[0])-1):
@@ -581,14 +547,6 @@ if __name__ == '__main__':
                         level=logging.INFO)
     
     app = QApplication(sys.argv)
-    app.setStyleSheet("""
-    QWidget {
-        font-size: 20px;
-        background-color: #060070;
-        color: white;
-        font-family: 'Arial';
-    }
-    """)
 
     try:
         with open("settings.json", "r") as f:
