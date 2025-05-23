@@ -32,7 +32,7 @@ class method_states_t:
     previous_method: FilterMethod
     next_method: FilterMethod
 
-    def __init__(self, method: FilterMethod):
+    def __init__(self, method: FilterMethod = FilterMethod.NoFiltering):
         # This setup allows a lock free synchronization
         self.filter_method = method
         self.previous_method = method
