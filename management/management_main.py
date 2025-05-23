@@ -114,20 +114,10 @@ class GoogleSheetTableApp(QMainWindow):
         # Save color values for later use
         current_os = platform.system()
 
-        # if (current_os == "Darwin"):
-        #     self.colors = {
-        #         'base': self.table_widget.palette().base(),
-        #         'alternateBase': self.table_widget.palette().alternateBase(),
-        #         'brightText': QBrush(QColor(255, 0, 0)), # red
-        #         'text': self.table_widget.palette().text()
-        #     }
-        # elif (current_os == "Linux"):
-        #      self.colors = {
-        #         'base': self.table_widget.palette().base(),
-        #         'alternateBase': QBrush(QColor(192, 192, 192)), # grey
-        #         'brightText': QBrush(QColor(255, 0, 0)), # red
-        #         'text': self.table_widget.palette().text()
-        #     }
+        self.table_colors = {
+            'brightText': QBrush(QColor(255, 0, 0)), # red
+            'text': self.table_widget.palette().text()
+        }
 
         # Load table data from Google Sheets
         try:
@@ -324,11 +314,11 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.redo_stack.clear()
         if self.table_initial_state[row, column] != new_value:
-            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['brightText'])
             if value is not None:
                 self.table_widget.item(row, column).setText(new_value)
         else:
-            self.table_widget.item(row, column).setForeground(self.colors['text'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['text'])
         self.undo_stack.append((row, column, previous_value))
         self.table_current_state[row, column] = new_value
         self.table_widget.cellChanged.connect(self.record_change)
@@ -349,9 +339,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.table_widget.item(row, column).setText(value)
         if self.table_initial_state[row][column] != value:
-            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['brightText'])
         else:
-            self.table_widget.item(row, column).setForeground(self.colors['text'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['text'])
         self.table_widget.cellChanged.connect(self.record_change)
 
     def redo(self):
@@ -366,9 +356,9 @@ class GoogleSheetTableApp(QMainWindow):
         self.table_widget.cellChanged.disconnect()
         self.table_widget.item(row, column).setText(value)
         if self.table_initial_state[row][column] != value:
-            self.table_widget.item(row, column).setForeground(self.colors['brightText'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['brightText'])
         else:
-            self.table_widget.item(row, column).setForeground(self.colors['text'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['text'])
         self.table_widget.cellChanged.connect(self.record_change)
 
     def save(self):
@@ -530,7 +520,7 @@ class GoogleSheetTableApp(QMainWindow):
             return
 
         for row, column, _ in deltas:
-            self.table_widget.item(row, column).setForeground(self.colors['text'])
+            self.table_widget.item(row, column).setForeground(self.table_colors['text'])
         self.table_initial_state = self.table_current_state.copy()
 
         logger.info("Pushed changes to Google Sheets")

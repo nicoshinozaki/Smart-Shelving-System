@@ -58,6 +58,10 @@ QTableWidget {
     color: black;
 }
 
+QTableWidgetItem {
+	font-size: 32px;
+}
+
 QTableWidget::item:selected {
     font-size: 24px;
     background-color: #FFFEA6; /* Light Yellow */
@@ -77,15 +81,15 @@ QHeaderView::section:vertical {
 QTableCornerButton::section {
     background-color: #0800FF /* Blue */
 }
-
-QStatusBar {
-    background-color:  #200090
-}
 QMenuBar {
     font-size: 16px;
     background-color:  #200090
 }
 QMenu {
+    font-size: 16px;
+    background-color:  #200090
+}
+QStatusBar {
     font-size: 16px;
     background-color:  #200090
 }</string>
@@ -504,6 +508,12 @@ QMenu {
      <width>987</width>
      <height>37</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>-1</pointsize>
+    </font>
    </property>
    <widget class="QMenu" name="menuSmart_Shelving_System">
     <property name="title">
