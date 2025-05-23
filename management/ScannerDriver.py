@@ -161,6 +161,7 @@ class ScannerDriver(WorkerThread):
             if state != previous:
                 changed_antennas.add(antenna_num)
         # update the trackers not detected
+        remove_tags = set()
         for antenna in self.trackers:
             for tag, tracker in self.trackers[antenna].items():
                 if (antenna, tag) not in tags:
@@ -169,7 +170,9 @@ class ScannerDriver(WorkerThread):
                         changed_antennas.add(antenna)
                     if tracker.detections.sum() == 0:
                         # remove the tracker if it is not detected
-                        del self.trackers[antenna][tag]
+                        remove_tags.add((antenna, tag))
+        for antenna, tag in remove_tags:
+            del self.trackers[antenna][tag]
         # emit only changed antennas
         if changed_antennas:
             self.pause()
