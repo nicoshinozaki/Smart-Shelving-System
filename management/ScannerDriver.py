@@ -148,6 +148,7 @@ class ScannerDriver(WorkerThread):
 
         changed_antennas = set()
         self.tag_counts = {i: 0 for i in range(self.antenna_count)}
+        # Update the trackers for detected tags
         for antenna_num, tag in tags:
             # check if a tracker exists for this tag
             if tag not in self.trackers[antenna_num]:
@@ -159,6 +160,13 @@ class ScannerDriver(WorkerThread):
                 self.tag_counts[antenna_num] += 1
             if state != previous:
                 changed_antennas.add(antenna_num)
+        # update the trackers not detected
+        for antenna in self.trackers:
+            for tag, tracker in self.trackers[antenna].items():
+                if (antenna, tag) not in tags:
+                    state, previous = tracker.update(False)
+                    if state != previous:
+                        changed_antennas.add(antenna)
         # emit only changed antennas
         if changed_antennas:
             self.pause()

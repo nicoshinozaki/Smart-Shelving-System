@@ -170,10 +170,13 @@ class GoogleSheetTableApp(QMainWindow):
     
     def change_algorithm(self, action):
         if action == self.actionNone:
+            self.console.append_output("No filtering selected")
             self.scanner.change_filter_method(FilterMethod.NoFiltering)
         elif action == self.actionLPF_window:
+            self.console.append_output("LPF filtering selected")
             self.scanner.change_filter_method(FilterMethod.WindowLPF)
         elif action == self.actionHMM_Viterbi:
+            self.console.append_output("HMM-Viterbi filtering selected")
             self.scanner.change_filter_method(FilterMethod.HMMViterbi)
     
     def toggle_auto_save(self):
