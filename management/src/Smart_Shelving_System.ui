@@ -203,7 +203,7 @@
         <property name="font">
          <font>
           <family>Courier New</family>
-          <pointsize>20</pointsize>
+          <pointsize>16</pointsize>
          </font>
         </property>
         <property name="readOnly">

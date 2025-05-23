@@ -67,6 +67,7 @@ class GoogleSheetTableApp(QMainWindow):
         scroller.setScrollerProperties(props)
         self.ConsoleDisplay.setStyleSheet("""
         QPlainTextEdit {
+            font-size: 16px;
             background-color: #5B00A6; /* Dark Purple */
             color: white;
         }
@@ -114,6 +115,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.save_button = self.findChild(QPushButton, 'saveButton')
         self.save_button.setStyleSheet("""
         QPushButton {
+            font-size: 20px;
             background-color: #5B00A6; /* Dark Purple */
             color: white;
         }
@@ -121,6 +123,7 @@ class GoogleSheetTableApp(QMainWindow):
         self.reload_button = self.findChild(QPushButton, 'reloadButton')
         self.reload_button.setStyleSheet("""
         QPushButton {
+            font-size: 20px;
             background-color: #5B00A6; /* Dark Purple */
             color: white;
         }
@@ -137,20 +140,21 @@ class GoogleSheetTableApp(QMainWindow):
 
         # Save color values for later use
         current_os = platform.system()
-        if (current_os == "Darwin"):
-            self.colors = {
-                'base': self.table_widget.palette().base(),
-                'alternateBase': self.table_widget.palette().alternateBase(),
-                'brightText': QBrush(QColor(255, 0, 0)), # red
-                'text': self.table_widget.palette().text()
-            }
-        elif (current_os == "Linux"):
-             self.colors = {
-                'base': self.table_widget.palette().base(),
-                'alternateBase': QBrush(QColor(192, 192, 192)), # grey
-                'brightText': QBrush(QColor(255, 0, 0)), # red
-                'text': self.table_widget.palette().text()
-            }
+
+        # if (current_os == "Darwin"):
+        #     self.colors = {
+        #         'base': self.table_widget.palette().base(),
+        #         'alternateBase': self.table_widget.palette().alternateBase(),
+        #         'brightText': QBrush(QColor(255, 0, 0)), # red
+        #         'text': self.table_widget.palette().text()
+        #     }
+        # elif (current_os == "Linux"):
+        #      self.colors = {
+        #         'base': self.table_widget.palette().base(),
+        #         'alternateBase': QBrush(QColor(192, 192, 192)), # grey
+        #         'brightText': QBrush(QColor(255, 0, 0)), # red
+        #         'text': self.table_widget.palette().text()
+        #     }
 
         # Load table data from Google Sheets
         try:
