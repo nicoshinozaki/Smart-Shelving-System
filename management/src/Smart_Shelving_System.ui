@@ -797,6 +797,9 @@ QStatusBar {
    </property>
   </action>
   <action name="actionNone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>None</string>
    </property>
@@ -807,6 +810,9 @@ QStatusBar {
    </property>
   </action>
   <action name="actionLPF_window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>LPF window</string>
    </property>
@@ -817,6 +823,9 @@ QStatusBar {
    </property>
   </action>
   <action name="actionHMM_Viterbi">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>HMM Viterbi</string>
    </property>

@@ -1,7 +1,7 @@
 import sys, os, logging, time, platform
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QPushButton, QHeaderView, QMessageBox, QStatusBar, QPlainTextEdit, QLineEdit, QWidget, QScroller, QScrollerProperties
 from PyQt6 import uic, QtGui, QtCore
-from PyQt6.QtGui import QColor, QBrush
+from PyQt6.QtGui import QColor, QBrush, QActionGroup
 from PyQt6.QtCore import QEvent, Qt
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
@@ -9,7 +9,7 @@ from serial.tools.list_ports import comports
 import numpy as np
 from Workers import WorkerThread
 from Console import Console
-from ScannerDriver import ScannerDriver
+from ScannerDriver import ScannerDriver, FilterMethod
 from ZebraSerialConfig import ZebraSerialConfig
 import json
 import subprocess
@@ -111,6 +111,15 @@ class GoogleSheetTableApp(QMainWindow):
         self.actionAuto_save.toggled.connect(self.toggle_auto_save)
         self.actionWarn_inventory_change.toggled.connect(self.toggle_warn_inventory_change)
 
+        # Create an algorithm select action group
+        self.algorithm_group = QActionGroup(self)
+        self.algorithm_group.setExclusive(True)
+        self.algorithm_group.addAction(self.actionNone)
+        self.algorithm_group.addAction(self.actionLPF_window)
+        self.algorithm_group.addAction(self.actionHMM_Viterbi)
+        self.actionNone.setChecked(True)
+        self.algorithm_group.triggered.connect(self.change_algorithm)
+
         # Save color values for later use
         current_os = platform.system()
 
@@ -168,6 +177,14 @@ class GoogleSheetTableApp(QMainWindow):
         values = result.get('values', [])
         
         return values
+    
+    def change_algorithm(self, action):
+        if action == self.actionNone:
+            self.scanner.change_filter_method(FilterMethod.NoFiltering)
+        elif action == self.actionLPF_window:
+            self.scanner.change_filter_method(FilterMethod.WindowLPF)
+        elif action == self.HMM_Viterbi:
+            self.scanner.change_filter_method(FilterMethod.HMMViterbi)
     
     def toggle_auto_save(self):
         if self.settings.get('auto_save', True):
@@ -422,34 +439,14 @@ class GoogleSheetTableApp(QMainWindow):
         else:
             return
         
-    def handle_scan_results(self, results):
-        if type(results) == str:
-            self.console.append_output(results)
-            return
-        if results == None:
-            return
-        for antenna in results:
-            results[antenna] = [tag for tag in results[antenna] if results[antenna][tag].mean() > 0.5]
-        changed = []
-        if self.last_scan_results is None:
-            self.console.append_output("No tag history found.")
-            self.changed = list(results.keys())
-        else:
-            for antenna in results:
-                try:
-                    if set(results[antenna]) != set(self.last_scan_results[antenna]):
-                        changed.append(antenna)
-                except KeyError:
-                    self.console.append_output(f"New antenna {antenna} detected.")
-                    changed.append(antenna)
-
-        if not changed: return
+    def handle_scan_results(self, results:dict):
+        
         self.scanner.pause()
         if self.settings.get('warn_inventory_change', True):
             response = QMessageBox.critical(
                 self,
                 "Inventory Changed",
-                f"Inventory changed for drawers {changed}, Record changes?",
+                f"Inventory changed for drawers {results.keys()}, Record changes?",
                 QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
             )
 
