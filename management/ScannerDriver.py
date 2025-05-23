@@ -161,8 +161,8 @@ class ScannerDriver(WorkerThread):
                 changed_antennas.add(antenna_num)
         # emit only changed antennas
         if changed_antennas:
+            self.pause()
             self.signals.result.emit({i: self.tag_counts[i] for i in changed_antennas})
-            self.pause()       
 
     @staticmethod
     def _parse_buffer(buffer):
