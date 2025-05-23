@@ -300,6 +300,7 @@ class ConsoleCommandHandler(WorkerThread):
                     info += f"{id}:\t{tracker}\n"
             except ValueError:
                 return f"Invalid drawer number: {args[0]}"
+        return info
             
 
 class Console(object):
