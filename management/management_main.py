@@ -433,6 +433,8 @@ class GoogleSheetTableApp(QMainWindow):
             return
         
     def handle_scan_results(self, results:dict):
+        if not results:
+            return
         # Scanner is paused when results are received
         if self.settings.get('warn_inventory_change', True):
             response = QMessageBox.critical(
