@@ -583,6 +583,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyleSheet("""
     QWidget {
+        font-size: 20px;
         background-color: #060070;
         color: white;
         font-family: 'Arial';
