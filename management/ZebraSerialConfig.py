@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoAlertPresentException
 import subprocess
@@ -17,7 +18,14 @@ class ZebraSerialConfig:
         self.url = url
         self.password = password
         self.service = Service(self.driver_path)
-        self.driver = webdriver.Chrome(service=self.service)
+        
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        
+        self.driver = webdriver.Chrome(service=self.service, options=options)
 
     def frame_switch(self, frame_id):
         WebDriverWait(self.driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, frame_id)))
