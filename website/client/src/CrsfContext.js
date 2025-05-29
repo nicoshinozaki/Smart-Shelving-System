@@ -7,7 +7,7 @@ export const CsrfProvider = ({ children }) => {
 
   useEffect(() => {
     // Adjust the URL if needed (use the correct protocol and host)
-    fetch('https://localhost/api/csrf-token', {
+    fetch('/api/csrf-token', {
       credentials: 'include', // include cookies if your CSRF setup uses them
     })
       .then((res) => res.json())

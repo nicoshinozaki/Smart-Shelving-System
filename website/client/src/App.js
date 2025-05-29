@@ -10,6 +10,8 @@ import InventoryData from './pages/DesktopInventoryData/DesktopInventoryData'
 import AdminPage from './pages/DesktopAdmin/DesktopAdmin';
 import ProtectedRoute from './ProtectedRoute';
 
+const API = process.env.API_BASE_DEV;
+
 function App() {
   const [data, setData] = useState(null);
 
