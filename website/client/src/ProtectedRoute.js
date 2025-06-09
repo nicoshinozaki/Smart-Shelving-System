@@ -1,31 +1,32 @@
 // ProtectedRoute.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const [auth, setAuth] = useState({ loading: true, isAuth: false, role: null });
+  const { loading, isAuth, role } = useAuth();
 
-  useEffect(() => {
-    fetch('/api/me', { credentials: 'include' })
-      .then(async res => {
-        if (res.ok) {
-          const body = await res.json();
-          setAuth({ loading: false, isAuth: true, role: body.role });
-        } else {
-          setAuth({ loading: false, isAuth: false, role: null });
-        }
-      })
-      .catch(() => setAuth({ loading: false, isAuth: false, role: null }));
-  }, []);
-
-  if (auth.loading) {
+  // 1) Still loading? show a placeholder
+  if (loading) {
     return <div>Loading…</div>;
   }
-  if (!auth.isAuth) {
+
+  // 2) Not authenticated? kick them to login
+  if (!isAuth) {
     return <Navigate to="/login" replace />;
   }
-  if (requiredRole && auth.role.toLowerCase() !== requiredRole.toLowerCase()) {
-    return <Navigate to="/" replace />;
+
+  // 3) Wrong role? send them home (or somewhere safe)
+  if (requiredRole && role.toLowerCase() !== requiredRole.toLowerCase()) {
+    switch (role.toLowerCase()) {
+      case "admin":
+        return <Navigate to="/adminpage" replace />;
+        break;
+      case "employee":
+        return <Navigate to="/inventoryData" replace />;
+    }
   }
+
+  // 4) All good – render the protected content
   return children;
 }

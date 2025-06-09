@@ -374,3 +374,12 @@
     position: relative;
     width: 100%;
   }
+
+  .refresh-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin: 0 8px;
+  }
+  

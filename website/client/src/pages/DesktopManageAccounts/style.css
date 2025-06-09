@@ -1,0 +1,834 @@
+.desktop-data {
+    align-items: center;
+    background-color: #0e0c31;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+    position: relative;
+    overflow: clip;
+    max-height: 100vh;
+  }
+  
+  .desktop-data .sign-out-container {
+      position: absolute;
+      width: auto;
+      height: auto;
+      top: 10px;
+      right: 0;
+      z-index: 4;
+      opacity: 0; /* Start hidden */
+      visibility: hidden; /* Ensures it's not interactable when hidden */
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s;
+      transform: scale(0.8); 
+      transform-origin: top right; /* Keeps it aligned to the top-right corner */
+    }
+    
+    .desktop-data .sign-out-container.show {
+      opacity: 1; /* Fully visible */
+      transform: scale(0.8) translateY(0); /* Maintains scale while becoming visible */
+      visibility: visible; /* Make it interactable */
+      transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    }
+    
+  .desktop-data .frame {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: clamp(5px, 5vh, 30px) clamp(1px, 5vw, 175px);
+    padding-bottom: 0 !important;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .user-icon{
+    border: 2px solid white;
+    border-radius: 50%;
+    padding:8px;
+    height: 20px;
+    width: 20px;
+    transition: 0.3s ease, color 0.3s ease;
+    z-index: 20;
+    color: white;
+  }
+  .desktop-data .dialog-box{
+    width: 400px;
+  }
+  .desktop-data .user-icon:hover{
+    color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+  .desktop-data .navbar {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .img {
+    height: 36px;
+    margin-bottom: -8px;
+    margin-left: -4px;
+    position: relative;
+    width: 156px;
+  }
+  
+  .desktop-data .hero {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+    justify-content: flex-start;
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+  }
+  .navbar, .hero, .footer {
+    flex-shrink: 1; /* Allows the sections to shrink when screen height reduces */
+  }
+  .desktop-data .frame-22 {
+    background-color: #5dd0d0;
+    border-radius: 8px;
+    height: 47px;
+    overflow: hidden;
+    position: relative;
+    width: 133px;
+  }
+  
+  .desktop-data .text-wrapper-14 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    left: 36px;
+    letter-spacing: 0;
+    line-height: 27.5px;
+    position: absolute;
+    top: 9px;
+    white-space: nowrap;
+    width: 75px;
+  }
+  .desktop-data .table {
+    width: 100%;
+    border: 1px solid #f50004;
+    border-radius: 12px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow: hidden;
+    z-index: 3;
+    table-layout: fixed; /* Keeps column sizing correct */
+    background-color: transparent;
+    align-self: flex-start;
+  }
+  
+  .desktop-data .frame-wrapper {
+    background-color: #ffffff;
+    height: 30px;
+    width: 30px;
+  }
+  
+  .desktop-data .table th,
+  .desktop-data .table td {
+    border: 1px solid #ff0004c7;
+    padding: 12px 24px;
+    text-align: center;
+  }
+  
+  .desktop-data .column {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+  }
+  
+  .desktop-data .header-cell {
+    background-color: #400078c7;
+    color: #ffffff;
+    font-weight: bold;
+    width: 25%;  
+  }
+  
+  .desktop-data .text-wrapper {
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 26px;
+    position: relative;
+    text-align: center;
+  }
+  
+  .desktop-data .div {
+    color: #ffffff96;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 26px;
+    position: relative;
+    text-align: center;
+  }
+  .desktop-data .item-cell,
+  .desktop-data .arrow-right-wrapper {
+    background-color: #ff00ba82;
+    color: #ffffff96;
+    vertical-align: middle;
+  
+  }
+  
+  .desktop-data .arrow-right-wrapper {
+    display: table-cell;  /* Maintain table structure */
+    vertical-align: middle; /* Center vertically */
+    text-align: center;  /* Center horizontally */
+    padding: 0; /* Remove any padding that could push content */
+  }
+  .arrow-right-instance {
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+  }
+  .arrow-right-instance:hover{
+    transform: scale(1.2);
+    filter: brightness(10);
+  }
+  .desktop-data .arrow-container {
+    display: inline-flex;
+    justify-content: center; 
+    align-items: center;
+    width: 100%;
+  }
+  .desktop-data .footer {
+    align-items: center;
+    align-self: stretch;
+    background-color: transparent;
+    display: flex;
+    height: 159px;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .div-wrapper {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-grow: 1;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+  }
+  
+  .desktop-data .text-wrapper-2 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    height: 129px;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: 83px;
+  }
+  
+  .desktop-data .frame-2 {
+    align-items: flex-start;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .desktop-data .frame-3 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+    padding: 10px 3px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .text-wrapper-3 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: fit-content;
+  }
+  
+  .desktop-data .frame-4 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px 3px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .home-log-in-sign-up {
+    align-self: stretch;
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-data .frame-5 {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    position: relative;
+  }
+  
+  .desktop-data .text-wrapper-4 {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+    width: 80px;
+  }
+  
+  .desktop-data .email-website {
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-data .text-wrapper-5 {
+    color: #ffffff;
+    flex: 1;
+    font-family: "Outfit", Helvetica;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    margin-top: -1px;
+    position: relative;
+  }
+  
+  .desktop-data .support-FAQ {
+    color: #ffffff;
+    font-family: "Outfit", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 31px;
+    margin-top: -1px;
+    position: relative;
+    width: fit-content;
+  }
+  
+  .desktop-data .ellipse {
+    background-color: #87d0d080;
+    border-radius: 294px/297px;
+    filter: blur(305px);
+    height: 594px;
+    left: -218px;
+    position: absolute;
+    top: 269px;
+    width: 588px;
+  }
+  
+  .desktop-data .ellipse-2 {
+    height: 574px;
+    left: 560px;
+    position: absolute;
+    top: 0;
+    width: 1090px;
+  }
+  
+  .desktop-data .rectangle {
+    align-self: stretch;
+    height: 8px;
+    position: relative;
+    width: 100%;
+  }
+  
+  .desktop-data .table tbody tr {
+    height: 50px; /* Default row height */
+  }
+  .desktop-data .table tbody:empty::before {
+    content: "No results found";
+    display: table-row;
+    height: 50px;
+    text-align: center;
+    color: white;
+  }
+  .desktop-data .search-bar {
+    border: 2px solid white;
+    border-radius: 8px;
+    background-color: transparent;
+    color: white;
+    margin-right: 16px;
+    padding: 8px 12px;
+    font-size: 16px;
+    width: 200px;
+    outline: none;
+    z-index: 5;
+    transition: 0.3s ease;
+  }
+  
+  .desktop-data .search-bar::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .desktop-data .search-bar:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+  }
+  .empty-row {
+    visibility: hidden; 
+    pointer-events: none;/* The row is invisible, but its space is still reserved */
+  }
+  
+  .desktop-data .table tbody tr {
+    height: 50px;
+  }
+  .desktop-data .navbar {
+    display: flex;
+    justify-content: space-between; /* Keep logo on the left */
+    align-items: center;
+    width: 100%;
+  }
+  
+  .desktop-data .header-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-grow: 1;
+  }
+  
+  .desktop-data .filter-dropdown,
+  .desktop-data .sort-dropdown {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 8px;
+    padding: 8px 36px 8px 12px; 
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none; 
+    position: relative;
+    z-index: 5;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='white' fill='none' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; 
+    background-size: 14px;
+  }
+
+  .desktop-data .filter-dropdown option,
+  .desktop-data .sort-dropdown option {
+    background-color: #0e0c31;
+    color: white;
+    /*border: 2px solid white;
+    border-radius: 8px;
+    padding: 8px 36px 8px 12px; 
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none; 
+    position: relative;
+    z-index: 5;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='white' fill='none' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; 
+    background-size: 14px;
+    */
+  }
+  .frame-7 {
+      align-items: center;
+      align-self: stretch;
+      background-color: #5dd0d0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      position: relative;
+      width: 129px;
+      height: 40px; 
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      padding: 5px 10px;
+      z-index: 4;
+      cursor: pointer;
+      transition: 0.3s ease, filter 0.3s ease;
+  }
+  
+  .frame-7:hover{
+      transform: scale(1.1);
+      filter: brightness(1.2);
+  }
+  
+  .text-wrapper-7 {
+      color: #ffffff;
+      font-family: "Outfit", Helvetica;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 27.5px;
+      text-align: center;
+      width: auto; 
+      flex: none;
+      display: flex;
+      justify-content: center; 
+      align-items: center; 
+  }
+  
+  .frame-8 {
+      align-items: flex-start;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 111px;
+      position: relative;
+      width: 100%;
+    }
+    
+  .text-wrapper-8 {
+      align-self: stretch;
+      color: #ffffff;
+      font-family: "Outfit", Helvetica;
+      font-size: 32px;
+      font-weight: 400;
+      height: 47px;
+      letter-spacing: 0;
+      line-height: normal;
+      margin-top: -1px;
+      position: relative;
+    }
+    
+  .frame-9 {
+      align-items: center;
+      align-self: stretch;
+      display: flex;
+      flex: 1;
+      flex-grow: 1;
+      gap: 10px;
+      position: relative;
+      width: 100%;
+    }
+    
+  .text-wrapper-9 {
+      align-self: stretch;
+      color: #ffffff;
+      font-family: "Outfit", Helvetica;
+      font-size: 25px;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: normal;
+      margin-top: -1px;
+      position: relative;
+      width: 317px;
+    }
+    
+  .overlap-group-wrapper {
+      align-self: stretch;
+      position: relative;
+      width: auto;
+      display: flex;
+    }
+    
+  .user-gmail-com-wrapper {
+      background-image: url(https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/67c149d9fc6a133f98924933/img/rectangle-22-1.png);
+      background-size: 100% 100%;
+      height: 42px;
+      left: -4px;
+      position: relative;
+      width: 325px;
+    }
+    
+  .user-gmail-com {
+      background-color: transparent;
+      border: 0;
+      color: #ffffff59;
+      font-family: "Outfit", Helvetica;
+      font-size: 15px;
+      font-weight: 400;
+      height: 25px;
+      left: 13px;
+      letter-spacing: 0;
+      line-height: normal;
+      padding: 0;
+      position: relative;
+      top: 3px;
+      width: 90%;
+      z-index: 3;
+    }
+  
+  .user-gmail-com:focus{
+      border: none;
+      outline: none;
+  }
+  .user-gmail-com::placeholder {
+      color: #ffffff36;
+  }
+    
+  .sign-in-button-instance {
+      top: unset !important;
+      cursor: pointer;
+      z-index: 4;
+      transition: 0.3s ease, filter 0.3s ease;
+  }
+  .sign-in-button-instance:hover{
+      transform: scale(1.05);
+      filter: brightness(1.2);
+  }
+  
+  /* Background blur effect when dialog is open */
+  .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 1;  /* Ensure it's fully visible when shown */
+      transition: opacity 0.5s ease-in-out; /* Smooth fade-in & fade-out */
+  }
+  
+  /* When hiding the dialog, fade out */
+  .dialog-overlay.hidden {
+      opacity: 0;
+      pointer-events: none; /* Prevent interaction while fading out */
+  }
+  
+  
+  /* Dialog Box */
+  .dialog-box {
+      background: linear-gradient(135deg, #5d0082, #320064);
+      border-radius: 12px;
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      width: 350px;  /* Fixed width */
+      text-align: center;
+      color: white;
+      font-family: "Outfit", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Ensures everything inside is centered */
+      justify-content: center;
+      animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Heading Text */
+  .dialog-box h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      white-space: normal; /* Allows text wrapping properly */
+  }
+  
+  /* Dialog Buttons */
+  .dialog-buttons {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      gap: 16px;
+      margin-top: 16px;
+  }
+  
+  /* Fix Button Sizing and Alignment */
+  .confirm-button, .cancel-button {
+      flex: 1; /* Equal width for both buttons */
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 100px;
+  }
+  
+  /* Button Colors */
+  .confirm-button {
+      background-color: #5dd0d0;
+      color: white;
+  }
+  
+  .cancel-button {
+      background-color: #f50004;
+      color: white;
+  }
+  
+  /* Hover Effects */
+  .confirm-button:hover, .cancel-button:hover {
+      filter: brightness(1.2);
+      transform: scale(1.05);
+  }
+  
+    .sign-in-button-instance {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      height: 42px; /* Match the button height */
+      width: 125px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  .sign-in-button-instance .overlap-group {
+      background-image: url(https://cdn.animaapp.com/projects/678b2a0b0cccaf0892a06da3/releases/67c149d9fc6a133f98924933/img/rectangle-22.png);
+      background-size: 100% 100%;
+      height: 42px;
+      width: 125px;
+      display: flex;
+      align-items: flex-start;  /* Aligns text to the top */
+      justify-content: center; /* Keeps it centered horizontally */
+      padding-top: 4px; /* Pushes text slightly down from the top */
+      transition: 0.3s ease;
+  }
+  
+  .sign-in-button-instance .sign-in {
+      color: #ffffff;
+      font-family: "Outfit", Helvetica;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: normal;
+      position: relative;
+      top: 0;
+  }
+  
+  
+  
+  .sign-in-button-instance:hover .overlap-group {
+      filter: brightness(1.2);
+      transform: scale(1.05);
+  }
+  
+  /* Checkmark Styling */
+  .checkmark {
+      font-size: 50px;
+      color: white;
+      margin-bottom: 10px;
+      animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Success Message */
+  .success-message {
+      font-size: 16px;
+      color: white;
+      text-align: center;
+      max-width: 300px;
+      animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Fade-in effect */
+  @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+  }
+  
+  .inventory-edit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;  /* Space between elements */
+    }
+    
+    .inventory-edit {
+      display: flex;
+      align-items: center;
+      gap: 65px;  /* Controls spacing */
+      font-size: 20px; /* Ensure it matches the saved text */
+    }
+    
+    .inventory-number {
+      font-size: 20px;  /* Match the font size of saved mode */
+      text-align: center;
+      font-family: "Outfit", Helvetica, sans-serif; /* Ensure font is the same */
+    }
+    
+    
+  
+  .plus-button, .minus-button {
+      background: #5dd0d0;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: 0.3s ease;
+  }
+  
+  .plus-button:hover, .minus-button:hover {
+      filter: brightness(1.2);
+  }
+  
+  .inventory-edit button {
+      background: none;  /* Removes the blue background */
+      border: none;       /* Removes default border */
+      color: inherit;     /* Keeps text color consistent */
+      font-size: 18px;    /* Adjust size */
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    
+    .inventory-edit button:hover {
+      transform: scale(1.1);  /* Slight hover effect */
+    }  

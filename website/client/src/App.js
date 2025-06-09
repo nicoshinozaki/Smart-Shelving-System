@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css';
 import './global.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -8,7 +8,9 @@ import Login from './pages/DesktopLogin/DesktopLogin';
 import Register from './pages/DesktopRegister/DesktopRegister'
 import InventoryData from './pages/DesktopInventoryData/DesktopInventoryData'
 import AdminPage from './pages/DesktopAdmin/DesktopAdmin';
+import ManageAccounts from './pages/DesktopManageAccounts/DesktopManageAccounts.js'
 import ProtectedRoute from './ProtectedRoute';
+import { AuthProvider } from './AuthContext.js';
 
 const API = process.env.API_BASE_DEV;
 
@@ -37,21 +39,28 @@ function App() {
     <Router>
       {/* Header would go here */}
       <CsrfProvider>
-        <Routes>
-          <Route path="/" element={<DesktopHomePage />} />
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/inventorydata" element={
-            <ProtectedRoute requiredRole={"Employee"}>
-              <InventoryData/>
-            </ProtectedRoute>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<DesktopHomePage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/inventorydata" element={
+              <ProtectedRoute requiredRole={"Employee"}>
+                <InventoryData />
+              </ProtectedRoute>
+            } />
+            <Route path="/adminpage" element={
+              <ProtectedRoute requiredRole={"Admin"}>
+                <AdminPage />
+              </ProtectedRoute>
+            } />
+            <Route path='/manageaccounts' element={
+              <ProtectedRoute requiredRole={"Admin"}>
+                <ManageAccounts />
+              </ProtectedRoute>
             }/>
-          <Route path="/adminpage" element={
-            <ProtectedRoute requiredRole={"Admin"}>
-              <AdminPage/>
-            </ProtectedRoute>
-            }/>
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </CsrfProvider>
       {/* Footer would go here */}
     </Router>
